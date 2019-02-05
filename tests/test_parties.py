@@ -13,6 +13,13 @@ class TestPartyEndPoint(unittest.TestCase):
             'hqAddress' : 'Jubilee House, Nairobi',
             'logoUrl' : 'https://images.pexels.com/photos/866351/pexels-photo-866351.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940'
         }
+
+        self.data_2={
+            'id' : '2',
+            'name': 'Naswa Party',
+            'hqAddress' : 'Naswa House, Nairobi',
+            'logoUrl' : 'https://images.pexels.com/photos/866351/pexels-photo-866351.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940'
+        }
         self.edit_data={
             'name': 'Nasa Party'
         }
@@ -20,6 +27,10 @@ class TestPartyEndPoint(unittest.TestCase):
         '''Test adding a party'''
         response = self.client.post(path='/api/v1/addparty',data=json.dumps(self.data), content_type='application/json')
         self.assertEqual(response.status_code, 201)
+
+        response = self.client.post(path='/api/v1/addparty',data=json.dumps(self.data_2), content_type='application/json')
+        self.assertEqual(response.status_code, 201)
+
     def test_get_parties(self):
         '''Test to get all parties'''
         response = self.client.get(path='/api/v1/parties', content_type='application/json')
@@ -37,8 +48,8 @@ class TestPartyEndPoint(unittest.TestCase):
 
     def test_delete_a_party(self):
         '''Test to delete a specific party'''
-        response = self.client.delete(path='/api/v1.parties/1', content_type='application/json')
+        response = self.client.delete(path='/api/v1/parties/2', content_type='application/json')
         self.assertEqual(response.status_code, 200)
-
+    
 if __name__ == '__main__':
     unittest.main()

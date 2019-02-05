@@ -70,3 +70,19 @@ def edit_a_party(party_id):
         'status' : 404,
         'error' : 'Party Not Found'
     }), 404)
+
+@party.route('/parties/<party_id>', methods=['DELETE'])
+def delete_a_party(party_id):
+    for party in PartyModel.parties_db:
+        if party['id'] == int(party_id):
+            index = int(party_id) - 1
+            PartyModel.parties_db.pop(index)
+            return make_response(jsonify({
+                'status' : 200,
+                'message' : 'Party has been deleted successfuly'
+            }), 200)
+
+    return make_response(jsonify({
+        'status' : 404,
+        'error' : 'Party not found.'
+    }))
