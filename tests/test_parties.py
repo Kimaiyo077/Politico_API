@@ -13,6 +13,9 @@ class TestPartyEndPoint(unittest.TestCase):
             'hqAddress' : 'Jubilee House, Nairobi',
             'logoUrl' : 'https://images.pexels.com/photos/866351/pexels-photo-866351.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940'
         }
+        self.edit_data={
+            'name': 'Nasa Party'
+        }
     def test_add_party(self):
         '''Test adding a party'''
         response = self.client.post(path='/api/v1/addparty',data=json.dumps(self.data), content_type='application/json')
@@ -28,7 +31,9 @@ class TestPartyEndPoint(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_edit_a_party(self):
-        pass
+        '''Test to edit a specific party'''
+        response = self.client.put(path='/api/v1/parties/1/name', data=json.dumps(self.edit_data), content_type='application/json')
+        self.assertEqual(response.status_code, 200)
 
     def test_delete_a_party(self):
         pass
