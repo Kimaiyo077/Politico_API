@@ -23,7 +23,9 @@ class TestPartyEndPoint(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
     
     def test_get_a_party(self):
-        pass
+        '''Test to get a specific party'''
+        response = self.client.get(path='/api/v1/parties/1', content_type='application/json')
+        self.assertEqual(response.status_code, 200)
 
     def test_edit_a_party(self):
         pass
