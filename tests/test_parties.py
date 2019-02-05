@@ -32,7 +32,7 @@ class TestPartyEndPoint(unittest.TestCase):
 
     def test_edit_a_party(self):
         '''Test to edit a specific party'''
-        response = self.client.put(path='/api/v1/parties/1/name', data=json.dumps(self.edit_data), content_type='application/json')
+        response = self.client.patch(path='/api/v1/parties/1/name', data=json.dumps(self.edit_data), content_type='application/json')
         self.assertEqual(response.status_code, 200)
 
     def test_delete_a_party(self):
