@@ -13,7 +13,10 @@ def create_app(config_name):
     app.config.from_object(app_config[config_name])
     app.config.from_pyfile('config.py')
 
+    from app import models
+    
     # Register blueprints
-
+    from app.party import party
+    app.register_blueprint(party, url_prefix='/api/v1')
 
     return app
