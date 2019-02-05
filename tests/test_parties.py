@@ -36,7 +36,9 @@ class TestPartyEndPoint(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_delete_a_party(self):
-        pass
+        '''Test to delete a specific party'''
+        response = self.client.delete(path='/api/v1.parties/1', content_type='application/json')
+        self.assertEqual(response.status_code, 200)
 
 if __name__ == '__main__':
     unittest.main()
