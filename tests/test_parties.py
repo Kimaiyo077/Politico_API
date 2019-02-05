@@ -7,13 +7,16 @@ class TestPartyEndPoint(unittest.TestCase):
         self.app = create_app('testing')
         self.client = self.app.test_client()
 
-        self.test_data={
+        self.data={
             'id' : '1',
             'name': 'Jubilee Party',
             'hqAddress' : 'Jubilee House, Nairobi',
             'logoUrl' : 'https://images.pexels.com/photos/866351/pexels-photo-866351.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940'
         }
-
+    def test_add_party(self):
+        '''Test adding a party'''
+        response = self.client.post(path='/api/v1/addparty',data=json.dumps(self.data), content_type='application/json')
+        self.assertEqual(response.status_code, 201)
     def test_get_parties(self):
         '''Test to get all parties'''
         response = self.client.get(path='/api/v1/parties', content_type='application/json')
