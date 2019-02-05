@@ -38,3 +38,17 @@ def add_party():
         'Message' : 'New Party added',
         'Party' : new_party['name']
     }), 201)
+
+@party.route('/parties/<party_id>', methods=['GET'])
+def get_a_party(party_id):
+    for party in PartyModel.parties_db:
+        if party['id'] == int(party_id):
+            return make_response(jsonify({
+                'status' : 200,
+                'data' : party
+            }), 200)
+
+    return make_response(jsonify({
+        'status': 404,
+        'error': 'Party does not exist'
+    }), 404)
