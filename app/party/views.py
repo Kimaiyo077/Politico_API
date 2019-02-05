@@ -52,3 +52,21 @@ def get_a_party(party_id):
         'status': 404,
         'error': 'Party does not exist'
     }), 404)
+
+@party.route('/parties/<party_id>/name', methods=['PATCH'])
+def edit_a_party(party_id):
+    data = request.get_json()
+    name = data['name']
+
+    for party in PartyModel.parties_db:
+        if party['id'] == int(party_id):
+            party['name'] = name
+            return make_response(jsonify({
+                'status' : 200,
+                'data' : party
+                }), 200)
+
+    return make_response(jsonify({
+        'status' : 404,
+        'error' : 'Party Not Found'
+    }), 404)
