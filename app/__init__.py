@@ -18,5 +18,7 @@ def create_app(config_name):
     # Register blueprints
     from app.party import party
     app.register_blueprint(party, url_prefix='/api/v1')
-
+    from app.office import office
+    app.register_blueprint(office, url_prefix='/api/v1')
+    
     return app
