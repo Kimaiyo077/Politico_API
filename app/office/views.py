@@ -49,3 +49,22 @@ def get_a_specific_office(office_id):
         'status': 404,
         'error': 'office does not exist'
     }), 404)
+
+
+@office.route('/offices/<office_id>', methods=['PATCH'])
+def edit_a_specific_office(office_id):
+    data = request.get_json()
+    name = data['name']
+
+    for office in OfficeModel.offices_db:
+        if office['id'] == int(office_id):
+            office['name'] = name
+            return make_response(jsonify({
+                'status' : 200,
+                'data' : office
+                }), 200)
+
+    return make_response(jsonify({
+        'status' : 404,
+        'error' : 'Office Not Found'
+    }), 404)
