@@ -24,6 +24,28 @@ def add_party():
     logoUrl = data['logoUrl']
     id = len(PartyModel.parties_db) + 1
 
+    if not name:
+        return make_response(jsonify({
+            'status': 400,
+            'error': 'Name cannot be empty'
+        }), 400)
+    elif not hqAddress:
+        return make_response(jsonify({
+            'status': 400,
+            'error': 'HQ address cannot be empty'
+        }), 400)
+    elif not logoUrl:
+        return make_response(jsonify({
+            'status': 400,
+            'error': 'Logo URLcannot be empty'
+        }), 400)
+
+    if len(name) > 20:
+        return make_response(jsonify({
+            'status': 400,
+            'error': 'Name cannot be longer than 20 characters'
+        }), 400)
+
     new_party = {
         'id' : id,
         'name' : name,
@@ -57,6 +79,17 @@ def get_a_party(party_id):
 def edit_a_party(party_id):
     data = request.get_json()
     name = data['name']
+
+    if not name:
+        return make_response(jsonify({
+            'status': 400,
+            'error': 'Name cannot be empty'
+        }), 400)
+    elif len(name) > 20:
+        return make_response(jsonify({
+            'status': 400,
+            'error': 'Name cannot be longer than 20 characters'
+        }), 400)
 
     for party in PartyModel.parties_db:
         if party['id'] == int(party_id):
