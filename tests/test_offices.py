@@ -19,6 +19,14 @@ class TestOfficeEndPoint(unittest.TestCase):
             'type': 'Local Government'
         }
 
+        self.edit_office={
+            'name' : 'Senetor'
+        }
+
+        self.edit_office2={
+            'type' : 'Federal'
+        }
+
     def test_add_office(self):
         '''Test adding a new office'''
         response = self.client.post(path='/api/v1/addoffices',data=json.dumps(self.data), content_type='application/json')
@@ -38,7 +46,13 @@ class TestOfficeEndPoint(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         
     def test_edit_an_office(self):
-        pass
+        '''Test to edit a specific political party'''
+        response = self.client.patch(path='/api/v1/offices/1', data=json.dumps(self.edit_office2), content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.patch(path='/api/v1/offices/2', data=json.dumps(self.edit_office), content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+
     def test_delete_an_office(self):
         pass
 
