@@ -24,8 +24,8 @@ class ProductionConfig(Config):
     DEBUG = False
 
 # create a dictionary to store instances of different configurations environments.
-app_config = {
-    'testing' : TestingConfig,
-    'development' : DevelopmentConfig,
-    'production' : ProductionConfig
-}
+app_config = dict(
+    testing = TestingConfig,
+    development = DevelopmentConfig,
+    production = ProductionConfig
+)
