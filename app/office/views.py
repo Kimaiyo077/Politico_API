@@ -23,6 +23,23 @@ def add_office():
     type = data['type']
     id = len(OfficeModel.offices_db) + 1
 
+    if not name:
+        return make_response(jsonify({
+            'status': 400,
+            'error': 'Name cannot be empty'
+        }))
+    elif not type:
+        return make_response(jsonify({
+            'status': 400,
+            'error': 'type cannot be empty'
+        }))
+
+    if not name.isalpha():
+        return make_response(jsonify({
+            'status': 400,
+            'error': 'Name must be alphabetical with no spaces'
+        }))
+
     new_office = {
         'id' : id,
         'name' : name,
@@ -56,6 +73,12 @@ def edit_a_specific_office(office_id):
     data = request.get_json()
     name = data['name']
 
+    if not name.isalpha():
+        return make_response(jsonify({
+            'status': 400,
+            'error': 'Name must be alphabetical with no spaces'
+        }))
+        
     for office in OfficeModel.offices_db:
         if office['id'] == int(office_id):
             office['name'] = name

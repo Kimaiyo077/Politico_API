@@ -22,7 +22,7 @@ class TestOfficeEndPoint(unittest.TestCase):
         
         self.data_3={
             'id' : 3,
-            'name': 'MP',
+            'name': 'Parliament',
             'type': 'Local Government'
         }
 
