@@ -68,3 +68,19 @@ def edit_a_specific_office(office_id):
         'status' : 404,
         'error' : 'Office Not Found'
     }), 404)
+
+@office.route('/office/<office_id>', methods=['DELETE'])
+def delete_a_office(office_id):
+    for office in OfficeModel.offices_db:
+        if office['id'] == int(office_id):
+            index = int(office_id) - 1
+            OfficeModel.offices_db.pop(index)
+            return make_response(jsonify({
+                'status' : 200,
+                'message' : 'Office has been deleted successfuly'
+            }), 200)
+
+    return make_response(jsonify({
+        'status' : 404,
+        'error' : 'Office not found.'
+    }))
