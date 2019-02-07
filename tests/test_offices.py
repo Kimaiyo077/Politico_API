@@ -33,7 +33,10 @@ class TestOfficeEndPoint(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         
     def test_get_an_office(self):
-        pass
+        '''Test to get a specific office'''
+        response = self.client.get(path='/api/v1/offices/1', content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+        
     def test_edit_an_office(self):
         pass
     def test_delete_an_office(self):
