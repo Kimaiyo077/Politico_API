@@ -43,12 +43,14 @@ class TestOfficeEndPoint(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         
     def test_edit_an_office(self):
-        '''Test to edit a specific political party'''
+        '''Test to edit a specific political office'''
         response = self.client.patch(path='/api/v1/offices/2', data=json.dumps(self.edit_office), content_type='application/json')
         self.assertEqual(response.status_code, 200)
 
     def test_delete_an_office(self):
-        pass
+        '''Test for deleting a specific office'''
+        response = self.client.delete(path='/api/v1/office/1', content_type='application/json')
+        self.assertEqual(response.status_code, 200)
 
 if __name__ == '__main__':
     unittest.main()
