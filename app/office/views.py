@@ -35,3 +35,17 @@ def add_office():
         'Status' : 201,
         'Office' : new_office
     }), 201)
+
+@office.route('/offices/<office_id>', methods=['GET'])
+def get_a_specific_office(office_id):
+    for office in OfficeModel.offices_db:
+        if office['id'] == int(office_id):
+            return make_response(jsonify({
+                'status' : 200,
+                'data' : office
+            }), 200)
+
+    return make_response(jsonify({
+        'status': 404,
+        'error': 'office does not exist'
+    }), 404)
