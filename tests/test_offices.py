@@ -20,11 +20,18 @@ class TestOfficeEndPoint(unittest.TestCase):
         }
 
     def test_add_office(self):
-        pass
+        '''Test adding a new office'''
+        response = self.client.post(path='/api/v1/addoffices',data=json.dumps(self.data), content_type='application/json')
+        self.assertEqual(response.status_code, 201)
+
+        response = self.client.post(path='/api/v1/addoffices',data=json.dumps(self.data_2), content_type='application/json')
+        self.assertEqual(response.status_code, 201)
+
     def test_get_offices(self):
         '''Test to get all offices'''
         response = self.client.get(path='/api/v1/offices', content_type='application/json')
         self.assertEqual(response.status_code, 200)
+        
     def test_get_an_office(self):
         pass
     def test_edit_an_office(self):
