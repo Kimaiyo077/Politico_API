@@ -1,8 +1,10 @@
+# Third party and local imports
 import unittest
 import json
 from app import create_app
 
 class TestPartyEndPoint(unittest.TestCase):
+    '''This is a class that holds all methods for testing party endpoints'''
     def setUp(self):
         self.app = create_app('testing')
         self.client = self.app.test_client()
