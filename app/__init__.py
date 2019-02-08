@@ -9,6 +9,7 @@ import os
 from app.config import app_config
 
 def create_app(config_name):
+    #creates an instance of Flask called app. 
     app = Flask(__name__)
     app.config.from_object(app_config[config_name])
     app.config.from_pyfile('config.py')
