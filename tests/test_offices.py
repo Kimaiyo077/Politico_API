@@ -1,8 +1,10 @@
+# third party and local imports
 import unittest
 import json
 from app import create_app
 
 class TestOfficeEndPoint(unittest.TestCase):
+    '''This is a test class for testing all office endpoints'''
     def setUp(self):
         self.app = create_app('testing')
         self.client = self.app.test_client()
