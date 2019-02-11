@@ -45,12 +45,12 @@ After the configuration, you will run the app uing the following commands
 | Method  | API Endpoint                  | Description                   |
 | ------- | ----------------------------- | ----------------------------- |
 | `GET`   | `/api/v1/offices`             | View all offices              |
-| `POST`  | `/api/v1/addoffices`          | Add a new office to the list  |
+| `POST`  | `/api/v1/offices`          | Add a new office to the list  |
 | `PATCH` | `/api/v1/offices/<office_id>` | update the name of a specific office |
 | `GET`   | `/api/v1/offices/<office_id>` | View a specific party from the list |
-| `DELETE`| `/api/v1/office/<office_id>`  | Deletes a specific office     |
+| `DELETE`| `/api/v1/offices/<office_id>`  | Deletes a specific office     |
 | `GET`   | `/api/v1/parties`             | Views all parties in the list |
-| `POST`  | `/api/v1/addparty`            | Adds a new party to the list  |
+| `POST`  | `/api/v1/parties`            | Adds a new party to the list  |
 | `PATCH` | `/api/v1/parties/<party_id>/name` | Edit name of a specific party |
 | `GET`   | `/api/v1/parties/<party_id>`  | View a specific party         |
 | `DELETE`| `/api/v1/parties/<party_id>`  | Deletes a specific party      |
@@ -59,7 +59,7 @@ After the configuration, you will run the app uing the following commands
 
 ### Creating a new office
 
-`/api/v1/addoffices`
+`/api/v1/offices`
 
 Payload
 
@@ -101,7 +101,7 @@ Expected response
 
 ### Add new party
 
-`/api/v1/addparty`
+`/api/v1/parties`
 
 Payload
 
