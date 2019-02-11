@@ -84,7 +84,7 @@ class TestOfficeEndPoint(unittest.TestCase):
 
     def test_delete_an_office(self):
         '''Test for deleting a specific office'''
-        response = self.client.delete(path='/api/v1/office/3', content_type='application/json')
+        response = self.client.delete(path='/api/v1/offices/3', content_type='application/json')
         self.assertEqual(response.status_code, 200)
 
 if __name__ == '__main__':
