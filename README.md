@@ -98,3 +98,48 @@ Expected response
     'data' : {'id':'1', 'name':'Presidents', 'type': 'State Government'}
 }
 ```
+
+### Add new party
+
+`/api/v1/addparty`
+
+Payload
+
+```
+{
+    'name': 'Jubilee Party',
+    'hqAddress' : 'Jubilee House, Nairobi',
+    'logoUrl' : 'https://images.pexels.com/photos/866351/pexels-photo-866351.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940'
+}
+```
+
+Expected response
+
+```
+{
+    'Status' : 'OK',
+    'Message' : 'New Party added',
+    'Party' : 'Jubilee Party'
+}
+```
+
+### Update an existing party
+
+`/api/v1/parties/1/name`
+
+Payload
+
+```
+{
+    'name' : 'Nasa Party'
+}
+```
+
+Expected response
+
+```
+{
+    'data' : {'id':'1', 'name': 'Nasa Party', 'hqAddress' : 'Jubilee House, Nairobi', logoUrl' : 'https://images.pexels.com/photos/866351/pexels-photo-866351.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940'},
+    'status' : 200
+}
+```
