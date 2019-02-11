@@ -39,3 +39,18 @@ After the configuration, you will run the app uing the following commands
 
 `export FLASK_APP=run.py`
 `flask run`
+
+## API endpoints
+
+| Method  | API Endpoint                  | Description                   |
+| ------- | ----------------------------- | ----------------------------- |
+| `GET`   | `/api/v1/offices`             | View all offices              |
+| `POST`  | `/api/v1/addoffices`          | Add a new office to the list  |
+| `PATCH` | `/api/v1/offices/<office_id>` | update the name of a specific office |
+| `GET`   | `/api/v1/offices/<office_id>` | View a specific party from the list |
+| `DELETE`| `/api/v1/office/<office_id>`  | Deletes a specific office     |
+| `GET`   | `/api/v1/parties`             | Views all parties in the list |
+| `POST`  | `/api/v1/addparty`            | Adds a new party to the list  |
+| `PATCH` | `/api/v1/parties/<party_id>/name` | Edit name of a specific party |
+| `GET`   | `/api/v1/parties/<party_id>`  | View a specific party         |
+| `DELETE`| `/api/v1/parties/<party_id>`  | Deletes a specific party      |
