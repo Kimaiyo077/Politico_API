@@ -146,4 +146,8 @@ Expected response
 
 ## Heroku application links
 
-[Heroku app](ttps://isaac-politico-api-heroku.herokuapp.com/api/v1/offices)
+[Heroku app](https://isaac-politico-api-heroku.herokuapp.com/api/v1/offices)
+
+## Pivotal Tracker Project Board
+
+[Pivotal Tracker](https://www.pivotaltracker.com/n/projects/2241889)
