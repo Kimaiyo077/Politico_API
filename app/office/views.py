@@ -18,7 +18,7 @@ def get_all_offices():
             'offices' : OfficeModel.offices_db
         }), 200)
 
-@office.route('/addoffices', methods=['POST'])
+@office.route('/offices', methods=['POST'])
 def add_office():
     data = request.get_json()
     name = data['name']
