@@ -18,7 +18,7 @@ def get_parties():
             'parties': PartyModel.parties_db
         }), 200)
 
-@party.route('/addparty', methods=['POST'])
+@party.route('/parties', methods=['POST'])
 def add_party():
     data = request.get_json()
     name = data['name']

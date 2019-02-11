@@ -39,16 +39,16 @@ class TestPartyEndPoint(unittest.TestCase):
         }
     def test_add_party(self):
         '''Test adding a party'''
-        response = self.client.post(path='/api/v1/addparty',data=json.dumps(self.data), content_type='application/json')
+        response = self.client.post(path='/api/v1/parties',data=json.dumps(self.data), content_type='application/json')
         self.assertEqual(response.status_code, 201)
 
-        response = self.client.post(path='/api/v1/addparty',data=json.dumps(self.data_2), content_type='application/json')
+        response = self.client.post(path='/api/v1/parties',data=json.dumps(self.data_2), content_type='application/json')
         self.assertEqual(response.status_code, 201)
 
-        response = self.client.post(path='/api/v1/addparty',data=json.dumps(self.bad_data), content_type='application/json')
+        response = self.client.post(path='/api/v1/parties',data=json.dumps(self.bad_data), content_type='application/json')
         self.assertEqual(response.status_code, 400)
 
-        response = self.client.post(path='/api/v1/addparty',data=json.dumps(self.bad_data2), content_type='application/json')
+        response = self.client.post(path='/api/v1/parties',data=json.dumps(self.bad_data2), content_type='application/json')
         self.assertEqual(response.status_code, 400)
 
     def test_get_parties(self):
