@@ -54,3 +54,47 @@ After the configuration, you will run the app uing the following commands
 | `PATCH` | `/api/v1/parties/<party_id>/name` | Edit name of a specific party |
 | `GET`   | `/api/v1/parties/<party_id>`  | View a specific party         |
 | `DELETE`| `/api/v1/parties/<party_id>`  | Deletes a specific party      |
+
+## API Payloads
+
+### Creating a new office
+
+`/api/v1/addoffices`
+
+Payload
+
+```
+{
+    'name': 'Presidential',
+    'type': 'State Government'
+}
+```
+
+Expected response
+
+```
+{
+    'data': {'id': '1', name': 'Presidential', 'type': 'State Government'},
+    'status': 200
+}
+```
+
+### Updating an existing offices name
+
+`/api/v1/offices/1`
+
+Payload
+
+```
+{
+    'name' : 'Presidents'
+}
+```
+
+Expected response
+
+```
+{
+    'data' : {'id':'1', 'name':'Presidents', 'type': 'State Government'}
+}
+```
