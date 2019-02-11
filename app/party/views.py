@@ -9,12 +9,12 @@ def get_parties():
     #checks to ensure that there are existing parties to get
     if len(PartyModel.parties_db) <= 0:
         return make_response(jsonify({
-            'status': 'Not Found',
+            'status': 404,
             'message': 'No parties to show'
         }), 404)
     else:
         return make_response(jsonify({
-            'status':'OK',
+            'status': 200,
             'parties': PartyModel.parties_db
         }), 200)
 
@@ -62,7 +62,7 @@ def add_party():
     PartyModel.parties_db.append(new_party)
 
     return make_response(jsonify({
-        'Status' : 'OK',
+        'Status' : 200,
         'Message' : 'New Party added',
         'Party' : new_party['name']
     }), 201)
