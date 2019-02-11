@@ -100,7 +100,7 @@ def edit_a_specific_office(office_id):
         'error' : 'Office Not Found'
     }), 404)
 
-@office.route('/office/<office_id>', methods=['DELETE'])
+@office.route('/offices/<office_id>', methods=['DELETE'])
 def delete_a_office(office_id):
     # loops through offices_db to find matching office and the removes it from offices db.
     for office in OfficeModel.offices_db:
