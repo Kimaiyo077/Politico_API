@@ -12,7 +12,7 @@ class TestOfficeEndPoint(unittest.TestCase):
         self.data={
             'id' : 1,
             'name': 'Presidential',
-            'type': 'State Government'
+            'type': 'Federal'
         }
 
         self.data_2={
@@ -47,6 +47,12 @@ class TestOfficeEndPoint(unittest.TestCase):
             'type' : ''
         }
 
+        self.bad_data3={
+            'id' : 1,
+            'name': 'Presidential',
+            'type': 'Presidents office'
+        }
+
     def test_add_office(self):
         '''Test adding a new office'''
         response = self.client.post(path='/api/v1/offices',data=json.dumps(self.data), content_type='application/json')
@@ -62,6 +68,9 @@ class TestOfficeEndPoint(unittest.TestCase):
         self.assertEqual(response.status_code, 400)
 
         response = self.client.post(path='/api/v1/offices',data=json.dumps(self.bad_data2), content_type='application/json')
+        self.assertEqual(response.status_code, 400)
+
+        response = self.client.post(path='/api/v1/offices',data=json.dumps(self.bad_data3), content_type='application/json')
         self.assertEqual(response.status_code, 400)
 
         response = self.client.post(path='/api/v1/offices',data=json.dumps(self.data), content_type='application/json')

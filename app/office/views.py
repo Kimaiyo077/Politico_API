@@ -24,6 +24,7 @@ def add_office():
     name = data['name'].strip()
     type = data['type'].strip()
     id = len(OfficeModel.offices_db) + 1
+    office_types = ['Federal', 'Legislative', 'State', 'Local Government']
 
     #runs data through validations to ensure that data is present and not missing.
     if not name:
@@ -50,6 +51,13 @@ def add_office():
             return make_response(jsonify({
             'status': 400,
             'error': 'An office with that name already exists'
+        }), 400)
+
+    #Checks type of office to be of correct type
+    if type not in office_types:
+        return make_response(jsonify({
+            'status': 400,
+            'error': 'Type of office does not exist. Please use either: Federal, Legislative, State, Local Government'
         }), 400)
 
     new_office = {
