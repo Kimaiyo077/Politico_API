@@ -21,8 +21,8 @@ def get_all_offices():
 @office.route('/offices', methods=['POST'])
 def add_office():
     data = request.get_json()
-    name = data['name']
-    type = data['type']
+    name = data['name'].strip()
+    type = data['type'].strip()
     id = len(OfficeModel.offices_db) + 1
 
     #runs data through validations to ensure that data is present and not missing.
@@ -85,7 +85,7 @@ def get_a_specific_office(office_id):
 @office.route('/offices/<office_id>', methods=['PATCH'])
 def edit_a_specific_office(office_id):
     data = request.get_json()
-    name = data['name']
+    name = data['name'].strip()
 
     #validates that new name is only alphabetical letters with no spaces
     if not name.isalpha():
