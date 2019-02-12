@@ -1,14 +1,18 @@
 class PartyModel:
-    '''an instance of the data structures that are required to to strore party data'''
+    '''Adds all functions that perfom CRUD operations on parties'''
+    #List to store all parties
     parties_db = []
 
     def create_party(data):
+        '''Method for creating new party'''
 
+        #Initializes all the required fields for party object
         name = data['name'].strip()
         hqAddress = data['hqAddress'].strip()
         logoUrl = data['logoUrl'].strip()
         id = len(PartyModel.parties_db) + 1
 
+        #Validates that all fields are filled and that none of them are left empty
         if not name:
             return [400 ,'name cannot be empty']
         elif not hqAddress:
@@ -16,6 +20,7 @@ class PartyModel:
         elif not logoUrl:
             return [400, 'logoUrl cannot be empty']
         
+        #iterates through party to check that the name provided is unique.
         for party in PartyModel.parties_db:
             if party['name'] == name:
                 return [400, 'A party with that name already exists']
@@ -34,14 +39,18 @@ class PartyModel:
         return [201, new_party]
 
     def get_all_parties():
+        '''Method for getting all parties'''
 
+        #validates that parties_db is not empty
         if len(PartyModel.parties_db) <= 0:
             return [404, 'No Parties to be shown']
         else:
             return [200, PartyModel.parties_db]
 
     def get_specific_party(party_id):
+        '''Method for getting a specific party'''
 
+        #iterates through parties_db to find matching party 
         for party in PartyModel.parties_db:
             if party['id'] == party_id:
                 return [200, party]
@@ -49,12 +58,15 @@ class PartyModel:
         return [ 404, 'Party does not exist']
     
     def edit_a_party(party_id, data):
+        '''Method for editing a specific party'''
+
         name = data['name'].strip()
 
+        #Validates that name is not empty
         if not name:
             return [404, 'name cannot be empty']
 
-
+        #Validates that the name provided does not already exist
         for party in PartyModel.parties_db:
             if party['name'] == name:
                 return [400, 'name already exists']
@@ -67,6 +79,9 @@ class PartyModel:
         return [404, 'party not found']
 
     def delete_specific_party(party_id):
+        '''Method for deleting a specific party'''
+
+        #loops through parties_db to find matching party id
         for party in PartyModel.parties_db:
             if party['id'] == party_id:
                 index = party_id - 1
@@ -77,45 +92,59 @@ class PartyModel:
 
         
 class OfficeModel:
-    '''an instance of the data structure that is required to strore office data'''
+    '''Adds all methods that perfom CRUD operations on offices'''
+
+    #List to store all offices
     offices_db = []
+
+    #list that stores all valids values of type
     office_types = ['Federal', 'Legislative', 'State', 'Local Government']
 
     def create_office(data):
+        '''Method to create a new office'''
+
         name = data['name'].strip()
         type = data ['type'].strip()
         id = len(OfficeModel.offices_db) + 1
 
+        # validates all inputs so that no field is left empty
         if not name:
             return [400 ,'name cannot be empty']
         elif not type:
             return [400, 'type cannot be empty']
         elif type not in OfficeModel.office_types:
             return [400, 'type must be either: Federal, Legislative, State or Local Government']
-        
+
+        #Loops through all offices to find if name already exists
         for office in OfficeModel.offices_db:
             if office['name'] == name:
                 return [400, 'An office with that name already exists']
         
-
+        #creates new office and stores data in a dictionary
         new_office = {
             'id': id,
             'name' : name,
             'type' : type
         }
 
+        #appends new office to offices_db
         OfficeModel.offices_db.append(new_office)
 
         return [201, new_office]
 
     def get_all_offices():
+        '''Method to display all offices'''
+
+        #checks if offices_db is empty
         if len(OfficeModel.offices_db) <= 0:
             return [404, 'No Offices to be showed']
         else:
             return [200, OfficeModel.offices_db]
 
     def get_specific_office(office_id):
-
+        '''Method for getting a specific office'''
+        
+        #loops through all offices to find one with matching id
         for office in OfficeModel.offices_db:
             if office['id'] == office_id:
                 return [200, office]
@@ -123,15 +152,19 @@ class OfficeModel:
         return [ 404, 'office does not exist']
 
     def edit_specific_office(office_id, data):
-        name = data['name'].strip()
+        ''' Method for editing a specific office'''
 
+        name = data['name'].strip()
+        #validates that input provided is not empty
         if not name:
             return [404, 'name cannot be empty']
 
+        #Loops through all offices to find if the name provided already exists
         for office in OfficeModel.offices_db:
             if office['name'] == name:
                 return [400, 'name already exists']
-
+        
+        #Iterates through all offices to find matching office
         for office in OfficeModel.offices_db:
             if office['id'] == office_id:
                 office['name'] = name
@@ -140,6 +173,9 @@ class OfficeModel:
         return [404, 'office not found']
 
     def delete_specific_office(office_id):
+        '''Method for deleting a specific office'''
+        
+        #loops through all offices to find matching office
         for office in OfficeModel.offices_db:
             if office['id'] == office_id:
                 index = office_id - 1
