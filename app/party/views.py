@@ -50,6 +50,14 @@ def add_party():
             'error': 'Name cannot be longer than 20 characters'
         }), 400)
 
+    #Checks for existing party name
+    for party in PartyModel.parties_db:
+        if name == party['name']:
+            return make_response(jsonify({
+                'status': 400,
+                'error': 'A Party with that name already exists'
+            }), 400) 
+
     #creates a new party filled with all required data.
     new_party = {
         'id' : id,
