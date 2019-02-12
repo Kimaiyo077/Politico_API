@@ -31,10 +31,6 @@ class TestOfficeEndPoint(unittest.TestCase):
             'name' : 'Senetor'
         }
 
-        self.edit_office2={
-            'name' : '12334'
-        }
-
         self.bad_data={
             'id' : 4,
             'name' : '',
@@ -63,7 +59,7 @@ class TestOfficeEndPoint(unittest.TestCase):
 
         response = self.client.post(path='/api/v1/offices',data=json.dumps(self.data_3), content_type='application/json')
         self.assertEqual(response.status_code, 201)
-
+        
         response = self.client.post(path='/api/v1/offices',data=json.dumps(self.bad_data), content_type='application/json')
         self.assertEqual(response.status_code, 400)
 
@@ -75,7 +71,7 @@ class TestOfficeEndPoint(unittest.TestCase):
 
         response = self.client.post(path='/api/v1/offices',data=json.dumps(self.data), content_type='application/json')
         self.assertEqual(response.status_code, 400)
-
+        
     def test_get_offices(self):
         '''Test to get all offices'''
         response = self.client.get(path='/api/v1/offices', content_type='application/json')
@@ -90,9 +86,6 @@ class TestOfficeEndPoint(unittest.TestCase):
         '''Test to edit a specific political office'''
         response = self.client.patch(path='/api/v1/offices/2', data=json.dumps(self.edit_office), content_type='application/json')
         self.assertEqual(response.status_code, 200)
-
-        response = self.client.patch(path='/api/v1/offices/2', data=json.dumps(self.edit_office2), content_type='application/json')
-        self.assertEqual(response.status_code, 400)
 
     def test_delete_an_office(self):
         '''Test for deleting a specific office'''
