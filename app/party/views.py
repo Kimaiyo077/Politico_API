@@ -21,9 +21,9 @@ def get_parties():
 @party.route('/parties', methods=['POST'])
 def add_party():
     data = request.get_json()
-    name = data['name']
-    hqAddress = data['hqAddress']
-    logoUrl = data['logoUrl']
+    name = data['name'].strip()
+    hqAddress = data['hqAddress'].strip()
+    logoUrl = data['logoUrl'].strip()
     id = len(PartyModel.parties_db) + 1
 
     #Validations to check that correct data is being added to parties_db.
@@ -49,6 +49,14 @@ def add_party():
             'status': 400,
             'error': 'Name cannot be longer than 20 characters'
         }), 400)
+
+    #Checks for existing party name
+    for party in PartyModel.parties_db:
+        if name == party['name']:
+            return make_response(jsonify({
+                'status': 400,
+                'error': 'A Party with that name already exists'
+            }), 400) 
 
     #creates a new party filled with all required data.
     new_party = {

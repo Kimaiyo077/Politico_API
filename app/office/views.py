@@ -21,9 +21,10 @@ def get_all_offices():
 @office.route('/offices', methods=['POST'])
 def add_office():
     data = request.get_json()
-    name = data['name']
-    type = data['type']
+    name = data['name'].strip()
+    type = data['type'].strip()
     id = len(OfficeModel.offices_db) + 1
+    office_types = ['Federal', 'Legislative', 'State', 'Local Government']
 
     #runs data through validations to ensure that data is present and not missing.
     if not name:
@@ -50,6 +51,13 @@ def add_office():
             return make_response(jsonify({
             'status': 400,
             'error': 'An office with that name already exists'
+        }), 400)
+
+    #Checks type of office to be of correct type
+    if type not in office_types:
+        return make_response(jsonify({
+            'status': 400,
+            'error': 'Type of office does not exist. Please use either: Federal, Legislative, State, Local Government'
         }), 400)
 
     new_office = {
@@ -85,7 +93,7 @@ def get_a_specific_office(office_id):
 @office.route('/offices/<office_id>', methods=['PATCH'])
 def edit_a_specific_office(office_id):
     data = request.get_json()
-    name = data['name']
+    name = data['name'].strip()
 
     #validates that new name is only alphabetical letters with no spaces
     if not name.isalpha():
