@@ -44,6 +44,14 @@ def add_office():
             'error': 'Name must be alphabetical with no spaces'
         }), 400)
 
+    #ensure no duplicate offices are added
+    for office in OfficeModel.offices_db:
+        if name == office['name']:
+            return make_response(jsonify({
+            'status': 400,
+            'error': 'An office with that name already exists'
+        }), 400)
+
     new_office = {
         'id' : id,
         'name' : name,
