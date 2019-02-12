@@ -21,9 +21,9 @@ def get_parties():
 @party.route('/parties', methods=['POST'])
 def add_party():
     data = request.get_json()
-    name = data['name']
-    hqAddress = data['hqAddress']
-    logoUrl = data['logoUrl']
+    name = data['name'].strip()
+    hqAddress = data['hqAddress'].strip()
+    logoUrl = data['logoUrl'].strip()
     id = len(PartyModel.parties_db) + 1
 
     #Validations to check that correct data is being added to parties_db.
