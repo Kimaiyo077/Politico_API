@@ -1,4 +1,7 @@
 import psycopg2
+import datetime
+import os
+import jwt
 from app import database_config
 
 class BaseModel:
@@ -13,6 +16,21 @@ class BaseModel:
             return True
         else:
             return False
+
+    def auth_token_encoder(user_id):
+        try:
+            payload = {
+                'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=60),
+                'iat': datetime.datetime.utcnow(),
+                'user': user_id
+            }
+            return jwt.encode(
+                payload,
+                os.getenv('SECRET'),
+                algorithm='HS256'
+            )
+        except Exception as e:
+            return e
 
 class userModel(BaseModel):
     
@@ -58,6 +76,10 @@ class userModel(BaseModel):
         con.commit()
         con.close
 
+        token = BaseModel.auth_token_encoder(userId)
+
+        Token = token.decode('UTF-8')
+
         registered_user = {
             'userId' : userId,
             'nationalId' : nationalId,
@@ -69,7 +91,7 @@ class userModel(BaseModel):
             'passportUrl' : passportUrl
         }
 
-        return [201, registered_user]
+        return [201, Token, registered_user]
         
 class PartyModel:
     '''Adds all functions that perfom CRUD operations on parties'''

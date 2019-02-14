@@ -10,7 +10,8 @@ def register_user():
     if response[0] == 201:
         return make_response(jsonify({
             'status' : response[0],
-            'data' : response[1]
+            'token' : response[1],
+            'User' : response[2]
         }), response[0])
     else:
         return make_response(jsonify({
