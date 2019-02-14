@@ -6,6 +6,14 @@ python:
 install:
   - pip install -r requirements.txt
   - pip install coveralls
+
+before_script:
+    - export FLASK_APP=run.py
+    - psql -c 'create database testpolitico;' -U postgres  
+    
+
+services:
+ - postgresql
   
 script:
   - pytest --cov=app
