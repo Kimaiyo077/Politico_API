@@ -78,6 +78,8 @@ class userModel(BaseModel):
 
         token = BaseModel.auth_token_encoder(userId)
 
+        Token = token.decode('UTF-8')
+
         registered_user = {
             'userId' : userId,
             'nationalId' : nationalId,
@@ -89,7 +91,7 @@ class userModel(BaseModel):
             'passportUrl' : passportUrl
         }
 
-        return [201, token.decode('UTF-8'), registered_user]
+        return [201, Token, registered_user]
         
 class PartyModel:
     '''Adds all functions that perfom CRUD operations on parties'''
