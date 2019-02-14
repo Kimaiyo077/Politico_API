@@ -3,7 +3,7 @@ import os
 
 #uri = os.getenv(['DATABASE_URI'])
 
-test_uri = "postgresql://postgres:kimaiyo@localhost/testpolitico"
+test_uri = os.getenv('DATABASE_URL')
 
 
 def connection(url):

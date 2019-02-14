@@ -13,7 +13,7 @@ class TestUserEndpoints(unittest.TestCase):
 
         self.user1 = {
             'nationalId' : '321654987',
-            'firstname' : 'Isaakc',
+            'firstname' : 'Isaack',
             'lastname' : 'Kimaiyo',
             'othername' : 'Kibiwot',
             'email' : 'email@email.com',
