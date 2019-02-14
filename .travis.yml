@@ -9,7 +9,7 @@ install:
 
 before_script:
     - export FLASK_APP=run.py
-    - psql -c 'create database political_test;' -U postgres  
+    - psql -c 'create database testpolitico;' -U postgres  
     
 
 services:
