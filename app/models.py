@@ -1,3 +1,11 @@
+from app import database_config
+
+class BaseModel:
+    pass
+
+class userModel(BaseModel):
+    pass
+
 class PartyModel:
     '''Adds all functions that perfom CRUD operations on parties'''
     #List to store all parties
