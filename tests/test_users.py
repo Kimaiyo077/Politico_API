@@ -11,26 +11,34 @@ class TestUserEndpoints(unittest.TestCase):
         self.app = create_app('testing')
         self.client = self.app.test_client()
 
-        user1 = {
-            'firstname' :'Isaac',
+        self.user1 = {
+            'nationalId' : '321654987',
+            'firstname' : 'Isaac',
             'lastname' : 'Kimaiyo',
             'othername' : 'Kibiwot',
             'email' : 'email@email.com',
-            'password' :'123456789',
             'phoneNumber': '9876543210',
             'passportUrl' : 'passport.com'
         }
 
-        duplicate_user = {
+        self.duplicate_user = {
+            'nationalId' : '321654987',
             'firstname' :'Isaac',
             'lastname' : 'Kimaiyo',
             'othername' : 'Kibiwot',
             'email' : 'email@email.com',
-            'password' :'123456789',
             'phoneNumber': '9876543210',
             'passportUrl' : 'passport.com'
         }
 
     def test_create_account(self):
+        response = self.client.post(path='/api/v2/auth/signup',content_type='application/json')
+        self.assertEqual(response.status_code, 400)
         response = self.client.post(path='/api/v2/auth/signup',data=json.dumps(self.user1), content_type='application/json')
         self.assertEqual(response.status_code, 201)
+        response = self.client.post(path='/api/v2/auth/signup',data=json.dumps(self.duplicate_user), content_type='application/json')
+        self.assertEqual(response.status_code, 409)
+
+    
+    if __name__=='__main__':
+        unittest.main()

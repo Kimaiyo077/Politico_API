@@ -5,7 +5,7 @@ from app.auth import auth
 @auth.route('/auth/signup', methods=['POST'])
 def register_user():
     data = request.get_json()
-    respone = userModel.create_account(data)
+    response = userModel.create_account(data)
 
     if response[0] == 201:
         return make_response(jsonify({
@@ -16,4 +16,4 @@ def register_user():
         return make_response(jsonify({
             'status' : response[0],
             'error' : response[1]
-        }), response[0]
+        }), response[0])

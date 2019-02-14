@@ -1,3 +1,4 @@
+import psycopg2
 from app import database_config
 
 class BaseModel:
@@ -21,7 +22,7 @@ class userModel(BaseModel):
         lastname = data['lastname'].strip()
         othername = data['othername'].strip()
         email = data['email'].strip()
-        phoneNumber = data['phoneNumber'].strip
+        phoneNumber = data['phoneNumber'].strip()
         passportUrl = data ['passportUrl'].strip()
 
         if not nationalId:
@@ -51,15 +52,24 @@ class userModel(BaseModel):
             'passportUrl' : passportUrl
         }
 
-        query = """ INSERT INTO users (nationalId, firstname, lastname, othername, email, phoneNumber,passportUrl)
-                    VALUES \ ( %(nationalId)s, %(firstname)s, %(lastname)s, %(othername)s, %(email)s, %(phoneNumber)s, %(passportUrl)s) RETURNING userId"""
-        
+        query = """ INSERT INTO users (nationalId, firstname, lastname, othername, email, phoneNumber, passportUrl) VALUES (%(nationalId)s , %(firstname)s, %(lastname)s, %(othername)s, %(email)s, %(phoneNumber)s, %(passportUrl)s) RETURNING userId"""     
         cur.execute(query, new_user)
         userId = cur.fetchone()[0]
         con.commit()
         con.close
 
-        return [201, new_user]
+        registered_user = {
+            'userId' : userId,
+            'nationalId' : nationalId,
+            'firstname' : firstname,
+            'lastname' : lastname,
+            'othername' : othername,
+            'email' : email,
+            'phoneNumber' : phoneNumber,
+            'passportUrl' : passportUrl
+        }
+
+        return [201, registered_user]
         
 class PartyModel:
     '''Adds all functions that perfom CRUD operations on parties'''
