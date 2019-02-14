@@ -24,11 +24,13 @@ class BaseModel:
                 'iat': datetime.datetime.utcnow(),
                 'user': user_id
             }
-            return jwt.encode(
+            token = jwt.encode(
                 payload,
                 os.getenv('SECRET'),
                 algorithm='HS256'
             )
+
+            return token.decode()
         except Exception as e:
             return e
 
@@ -43,6 +45,8 @@ class userModel(BaseModel):
         phoneNumber = data['phoneNumber'].strip()
         passportUrl = data ['passportUrl'].strip()
         password = data['password'].strip()
+
+        token = ''
 
         if not nationalId:
             return [400 ,'national Id cannot be empty']
@@ -82,7 +86,6 @@ class userModel(BaseModel):
 
         token = BaseModel.auth_token_encoder(userId)
 
-        Token = token.decode('utf-8')
 
         registered_user = {
             'userId' : userId,
@@ -95,11 +98,12 @@ class userModel(BaseModel):
             'passportUrl' : passportUrl
         }
 
-        return [201, Token, registered_user]
+        return [201, token, registered_user]
 
     def user_sign_in(data):
         user_email = data['email'].strip()
         user_password = data['password'].strip()
+        token = ''
 
         con = database_config.init_test_db()
         cur = con.cursor()
@@ -120,13 +124,12 @@ class userModel(BaseModel):
         for detail in res:
             if user_email == detail['email'] and user_password == detail['password']:
                 token = BaseModel.auth_token_encoder(detail['userId'])
-                Token = token.decode('utf-8')
                 data = {
                     'userId' : detail['userId'],
                     'email' : detail['email']
                 }
 
-                return [200, Token, data]
+                return [200, token, data]
         return [401, 'Please enter the correct email or password']
         
 class PartyModel:
