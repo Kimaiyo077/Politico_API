@@ -82,7 +82,7 @@ class userModel(BaseModel):
 
         token = BaseModel.auth_token_encoder(userId)
 
-        Token = str(token)
+        Token = token.decode('UTF-8')
 
         registered_user = {
             'userId' : userId,
@@ -120,7 +120,7 @@ class userModel(BaseModel):
         for detail in res:
             if user_email == detail['email'] and user_password == detail['password']:
                 token = BaseModel.auth_token_encoder(detail['userId'])
-                Token = str(token)
+                Token = token.decode('UTF-8')
                 data = {
                     'userId' : detail['userId'],
                     'email' : detail['email']
