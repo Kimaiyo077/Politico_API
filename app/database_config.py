@@ -52,7 +52,7 @@ def tables():
         userId SERIAL UNIQUE,
         nationalId NUMERIC NOT NULL,
         firstname VARCHAR NOT NULL,
-        secondname VARCHAR NOT NULL,
+        lastname VARCHAR NOT NULL,
         othername VARCHAR NOT NULL,
         email VARCHAR NOT NULL,
         phoneNumber VARCHAR NOT NULL,
