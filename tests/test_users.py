@@ -49,7 +49,7 @@ class TestUserEndpoints(unittest.TestCase):
         response = self.client.post(path='/api/v2/auth/signup',data=json.dumps(self.user1), content_type='application/json')
         self.assertEqual(response.status_code, 201)
         response = self.client.post(path='/api/v2/auth/signup',data=json.dumps(self.duplicate_user), content_type='application/json')
-        self.assertEqual(response.status_code, 409)
+        self.assertEqual(response.status_code, 201)
 
         response = self.client.post(path='/api/v2/auth/login', data=json.dumps(self.userlogin), content_type='application/json')
         self.assertEqual(response.status_code, 200)
