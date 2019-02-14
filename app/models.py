@@ -55,7 +55,6 @@ class userModel(BaseModel):
         elif not password:
             return [400, 'password cannot be empty']
             
-        database_config.destroy_db()
         con = database_config.init_test_db()
         cur = con.cursor()
 
