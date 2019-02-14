@@ -60,6 +60,7 @@ class userModel(BaseModel):
         con.close
 
         return [201, new_user]
+        
 class PartyModel:
     '''Adds all functions that perfom CRUD operations on parties'''
     #List to store all parties
