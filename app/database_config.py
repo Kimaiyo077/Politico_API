@@ -3,7 +3,7 @@ import os
 
 #uri = os.getenv(['DATABASE_URI'])
 
-test_uri = os.getenv('DATABASE_URL')
+test_uri = os.environ['DATABASE_URL']
 
 
 def connection(url):
