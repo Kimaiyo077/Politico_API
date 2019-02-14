@@ -42,6 +42,7 @@ class userModel(BaseModel):
         email = data['email'].strip()
         phoneNumber = data['phoneNumber'].strip()
         passportUrl = data ['passportUrl'].strip()
+        password = data['password'].strip()
 
         if not nationalId:
             return [400 ,'national Id cannot be empty']
@@ -51,6 +52,8 @@ class userModel(BaseModel):
             return [400, 'Last name cannot be empty']
         elif not email:
             return [400, 'email cannot be empty']
+        elif not password:
+            return [400, 'password cannot be empty']
 
         con = database_config.init_test_db()
         cur = con.cursor()
@@ -67,10 +70,11 @@ class userModel(BaseModel):
             'othername' : othername,
             'email' : email,
             'phoneNumber' : phoneNumber,
-            'passportUrl' : passportUrl
+            'passportUrl' : passportUrl,
+            'password' : password
         }
 
-        query = """ INSERT INTO users (nationalId, firstname, lastname, othername, email, phoneNumber, passportUrl) VALUES (%(nationalId)s , %(firstname)s, %(lastname)s, %(othername)s, %(email)s, %(phoneNumber)s, %(passportUrl)s) RETURNING userId"""     
+        query = """ INSERT INTO users (nationalId, firstname, lastname, othername, email, phoneNumber, passportUrl, password) VALUES (%(nationalId)s , %(firstname)s, %(lastname)s, %(othername)s, %(email)s, %(phoneNumber)s, %(passportUrl)s, %(password)s) RETURNING userId"""     
         cur.execute(query, new_user)
         userId = cur.fetchone()[0]
         con.commit()
@@ -78,7 +82,7 @@ class userModel(BaseModel):
 
         token = BaseModel.auth_token_encoder(userId)
 
-        Token = token.decode('UTF-8')
+        Token = str(token)
 
         registered_user = {
             'userId' : userId,
@@ -92,6 +96,38 @@ class userModel(BaseModel):
         }
 
         return [201, Token, registered_user]
+
+    def user_sign_in(data):
+        user_email = data['email'].strip()
+        user_password = data['password'].strip()
+
+        con = database_config.init_test_db()
+        cur = con.cursor()
+        query = "SELECT userId, email, password FROM users;"
+        cur.execute(query)
+        data = cur.fetchall()
+        res = []
+
+        for i, items in enumerate(data):
+            userId, email, password = items
+            details = {
+                'userId' : userId,
+                'email' : email,
+                'password' : password 
+            }
+            res.append(details)
+
+        for detail in res:
+            if user_email == detail['email'] and user_password == detail['password']:
+                token = BaseModel.auth_token_encoder(detail['userId'])
+                Token = str(token)
+                data = {
+                    'userId' : detail['userId'],
+                    'email' : detail['email']
+                }
+
+                return [200, Token, data]
+        return [401, 'Please enter the correct email or password']
         
 class PartyModel:
     '''Adds all functions that perfom CRUD operations on parties'''

@@ -57,6 +57,7 @@ def tables():
         email VARCHAR NOT NULL,
         phoneNumber VARCHAR NOT NULL,
         passportUrl TEXT NOT NULL,
+        password VARCHAR NOT NULL,
         IsAdmin BOOLEAN DEFAULT False); """
 
     offices = """ CREATE TABLE IF NOT EXISTS offices (

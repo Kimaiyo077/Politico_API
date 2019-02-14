@@ -18,3 +18,20 @@ def register_user():
             'status' : response[0],
             'error' : response[1]
         }), response[0])
+
+@auth.route('/auth/login', methods=['POST'])
+def user_login():
+    data = request.get_json()
+    response = userModel.user_sign_in(data)
+
+    if response[0] == 200:
+        return make_response(jsonify({
+            'status' : response[0],
+            'token' : response[1],
+            'User' : response[2]
+        }), response[0])
+    else:
+        return make_response(jsonify({
+            'status' : response[0],
+            'error' : response[1]
+        }), response[0])
