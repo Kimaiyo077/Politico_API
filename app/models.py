@@ -1,3 +1,76 @@
+import psycopg2
+from app import database_config
+
+class BaseModel:
+    def check_if_exists(table_name, field_name, value):
+        con = database_config.init_test_db()
+        cur = con.cursor()
+        query = "SELECT * FROM {} WHERE {}= '{}';".format(table_name, field_name, value)
+        cur.execute(query)
+        res = cur.fetchall()
+
+        if res:
+            return True
+        else:
+            return False
+
+class userModel(BaseModel):
+    
+    def create_account(data):
+        nationalId = data['nationalId'].strip()
+        firstname = data['firstname'].strip()
+        lastname = data['lastname'].strip()
+        othername = data['othername'].strip()
+        email = data['email'].strip()
+        phoneNumber = data['phoneNumber'].strip()
+        passportUrl = data ['passportUrl'].strip()
+
+        if not nationalId:
+            return [400 ,'national Id cannot be empty']
+        elif not firstname:
+            return [400 ,'First name cannot be empty']
+        elif not lastname:
+            return [400, 'Last name cannot be empty']
+        elif not email:
+            return [400, 'email cannot be empty']
+
+        con = database_config.init_test_db()
+        cur = con.cursor()
+
+        if BaseModel.check_if_exists('users', 'nationalId', nationalId) == True:
+            return [409, 'National Id already exists']
+        elif BaseModel.check_if_exists('users', 'email', email) == True:
+            return [409, 'That Email is in use already']
+
+        new_user = {
+            'nationalId' : nationalId,
+            'firstname' : firstname,
+            'lastname' : lastname,
+            'othername' : othername,
+            'email' : email,
+            'phoneNumber' : phoneNumber,
+            'passportUrl' : passportUrl
+        }
+
+        query = """ INSERT INTO users (nationalId, firstname, lastname, othername, email, phoneNumber, passportUrl) VALUES (%(nationalId)s , %(firstname)s, %(lastname)s, %(othername)s, %(email)s, %(phoneNumber)s, %(passportUrl)s) RETURNING userId"""     
+        cur.execute(query, new_user)
+        userId = cur.fetchone()[0]
+        con.commit()
+        con.close
+
+        registered_user = {
+            'userId' : userId,
+            'nationalId' : nationalId,
+            'firstname' : firstname,
+            'lastname' : lastname,
+            'othername' : othername,
+            'email' : email,
+            'phoneNumber' : phoneNumber,
+            'passportUrl' : passportUrl
+        }
+
+        return [201, registered_user]
+        
 class PartyModel:
     '''Adds all functions that perfom CRUD operations on parties'''
     #List to store all parties

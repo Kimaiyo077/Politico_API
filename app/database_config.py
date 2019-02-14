@@ -1,9 +1,9 @@
 import psycopg2
 import os
 
-uri = os.getenv(['DATABASE_URI'])
+#uri = os.getenv(['DATABASE_URI'])
 
-test_uri = os.getenv(['TEST_DATABASE_URI'])
+test_uri = "postgresql://postgres:kimaiyo@localhost/testpolitico"
 
 
 def connection(url):
@@ -37,7 +37,7 @@ def destroy_db():
     cur = con.cursor()
 
     users = """ DROP TABLE IF EXISTS users CASCADE;"""
-    offices = """ DROP TABLE IF EXISTS offices CASCADE;""""
+    offices = """ DROP TABLE IF EXISTS offices CASCADE;"""
     parties = """ DROP TABLE IF EXISTS parties CASCADE;"""
     candidates = """ DROP TABLE IF EXISTS candidates CASCADE;"""
     votes = """ DROP TABLE IF EXISTS votes CASCADE;"""
@@ -52,7 +52,7 @@ def tables():
         userId SERIAL UNIQUE,
         nationalId NUMERIC NOT NULL,
         firstname VARCHAR NOT NULL,
-        secondname VARCHAR NOT NULL,
+        lastname VARCHAR NOT NULL,
         othername VARCHAR NOT NULL,
         email VARCHAR NOT NULL,
         phoneNumber VARCHAR NOT NULL,
