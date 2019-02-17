@@ -78,7 +78,7 @@ class userModel(BaseModel):
             'password' : password
         }
 
-        query = """ INSERT INTO users (nationalId, firstname, lastname, othername, email, phoneNumber, passportUrl, password) VALUES (%(nationalId)s , %(firstname)s, %(lastname)s, %(othername)s, %(email)s, %(phoneNumber)s, %(passportUrl)s, %(password)s) RETURNING userId"""     
+        query = """ INSERT INTO users (nationalId, firstname, lastname, othername, email, phoneNumber, passportUrl, password) VALUES (%(nationalId)s , %(firstname)s, %(lastname)s, %(othername)s, %(email)s, %(phoneNumber)s, %(passportUrl)s, %(password)s) RETURNING email"""     
         cur.execute(query, new_user)
         userId = cur.fetchone()[0]
         con.commit()
@@ -123,7 +123,7 @@ class userModel(BaseModel):
 
         for detail in res:
             if user_email == detail['email'] and user_password == detail['password']:
-                token = BaseModel.auth_token_encoder(detail['userId'])
+                token = BaseModel.auth_token_encoder(detail['email'])
                 data = {
                     'userId' : detail['userId'],
                     'email' : detail['email']

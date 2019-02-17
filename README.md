@@ -54,6 +54,8 @@ After the configuration, you will run the app uing the following commands
 | `PATCH` | `/api/v1/parties/<party_id>/name` | Edit name of a specific party |
 | `GET`   | `/api/v1/parties/<party_id>`  | View a specific party         |
 | `DELETE`| `/api/v1/parties/<party_id>`  | Deletes a specific party      |
+| `POST`  | `/api/v2/auth/signup`         | Create a user account         |
+| `POST`  | `/api/v2/auth/login`          | Allows users to log in        |
 
 ## API Payloads
 
@@ -66,7 +68,7 @@ Payload
 ```
 {
     'name': 'Presidential',
-    'type': 'State Government'
+    'type': 'Federal'
 }
 ```
 
@@ -74,7 +76,7 @@ Expected response
 
 ```
 {
-    'data': {'id': '1', name': 'Presidential', 'type': 'State Government'},
+    'data': {'id': '1', name': 'Presidential', 'type': 'Federal'},
     'status': 200
 }
 ```
@@ -95,7 +97,7 @@ Expected response
 
 ```
 {
-    'data' : {'id':'1', 'name':'Presidents', 'type': 'State Government'}
+    'data' : {'id':'1', 'name':'Presidents', 'type': 'Federal'}
 }
 ```
 
@@ -117,7 +119,7 @@ Expected response
 
 ```
 {
-    'Status' : 'OK',
+    'Status' : 200,
     'Message' : 'New Party added',
     'Party' : 'Jubilee Party'
 }
@@ -151,3 +153,7 @@ Expected response
 ## Pivotal Tracker Project Board
 
 [Pivotal Tracker](https://www.pivotaltracker.com/n/projects/2241889)
+
+## API Documentation
+
+[Documentation](https://politico8.docs.apiary.io/#)
