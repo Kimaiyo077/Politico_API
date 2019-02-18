@@ -325,27 +325,39 @@ class OfficeModel:
         if not name:
             return [404, 'name cannot be empty']
 
-        #Loops through all offices to find if the name provided already exists
-        for office in OfficeModel.offices_db:
-            if office['name'] == name:
-                return [400, 'name already exists']
         
-        #Iterates through all offices to find matching office
-        for office in OfficeModel.offices_db:
-            if office['id'] == office_id:
-                office['name'] = name
-                return [200, office]
+        if BaseModel.check_if_exists('offices', 'officeName', name) == True:
+            return [409, "office already exists"]
 
-        return [404, 'office not found']
+        if BaseModel.check_if_exists('offices', 'officeID', office_id) == False:
+            return [404, "office doesn't exist"]
+
+        con = database_config.init_test_db()
+        cur = con.cursor()
+
+        query = """UPDATE offices SET officeName = '{}' WHERE officeId = {};""".format(name, office_id)
+
+        cur.execute(query)
+
+        con.commit()
+        con.close()
+
+        return [200, "Changes made successfully"]
 
     def delete_specific_office(office_id):
         '''Method for deleting a specific office'''
         
-        #loops through all offices to find matching office
-        for office in OfficeModel.offices_db:
-            if office['id'] == office_id:
-                index = office_id - 1
-                OfficeModel.offices_db.pop(index)
-                return [200, 'Office has been succefully deleted']
-        
-        return [404, 'office not found']
+        con = database_config.init_test_db()
+        cur = con.cursor()
+
+        if BaseModel().check_if_exists('offices', 'officeId', office_id) == False:
+            return [404, "No office with ID:{}".format(office_id)]
+
+        query = " DELETE FROM offices WHERE officeId = {}".format(office_id)
+
+        cur.execute(query)
+
+        con.commit()
+        con.close()
+
+        return [200, "Office successfully deleted"]
