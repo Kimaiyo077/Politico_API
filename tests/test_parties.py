@@ -1,7 +1,7 @@
 # Third party and local imports
 import unittest
 import json
-from app import create_app
+from app import create_app, database_config
 
 class TestPartyEndPoint(unittest.TestCase):
     '''This is a class that holds all methods for testing party endpoints'''
@@ -9,27 +9,25 @@ class TestPartyEndPoint(unittest.TestCase):
         self.app = create_app('testing')
         self.client = self.app.test_client()
 
+        database_config.init_test_db()
+
         self.data={
-            'id' : '1',
             'name': 'Jubilee Party',
             'hqAddress' : 'Jubilee House, Nairobi',
             'logoUrl' : 'https://images.pexels.com/photos/866351/pexels-photo-866351.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940'
         }
 
         self.data_2={
-            'id' : '2',
             'name': 'Naswa Party',
             'hqAddress' : 'Naswa House, Nairobi',
             'logoUrl' : 'https://images.pexels.com/photos/866351/pexels-photo-866351.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940'
         }
         self.bad_data={
-            'id' : '4',
             'name': 'Naswa Party',
             'hqAddress' : 'Naswa House, Nairobi',
             'logoUrl' : ''
         }
         self.bad_data2={
-            'id' : '5',
             'name': 'Naswa Party',
             'hqAddress' : '',
             'logoUrl' : 'https://images.pexels.com/photos/866351/pexels-photo-866351.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940'
@@ -52,7 +50,7 @@ class TestPartyEndPoint(unittest.TestCase):
         self.assertEqual(response.status_code, 400)
 
         response = self.client.post(path='/api/v1/parties',data=json.dumps(self.data), content_type='application/json')
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 409)
 
     def test_get_parties(self):
         '''Test to get all parties'''

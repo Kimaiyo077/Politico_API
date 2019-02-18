@@ -134,8 +134,6 @@ class userModel(BaseModel):
         
 class PartyModel:
     '''Adds all functions that perfom CRUD operations on parties'''
-    #List to store all parties
-    parties_db = []
 
     def create_party(data):
         '''Method for creating new party'''
@@ -144,7 +142,6 @@ class PartyModel:
         name = data['name'].strip()
         hqAddress = data['hqAddress'].strip()
         logoUrl = data['logoUrl'].strip()
-        id = len(PartyModel.parties_db) + 1
 
         #Validates that all fields are filled and that none of them are left empty
         if not name:
@@ -154,42 +151,83 @@ class PartyModel:
         elif not logoUrl:
             return [400, 'logoUrl cannot be empty']
         
-        #iterates through party to check that the name provided is unique.
-        for party in PartyModel.parties_db:
-            if party['name'] == name:
-                return [400, 'A party with that name already exists']
-        
-        #creates a new party filled with all required data.
-        new_party = {
-            'id' : id,
-            'name' : name,
-            'hqAddress' : hqAddress,
-            'logoUrl' : logoUrl 
-        }
-    
-        #adds new_party to parties_db
-        PartyModel.parties_db.append(new_party)
+        con = database_config.init_test_db()
+        cur = con.cursor()
 
-        return [201, new_party]
+        if BaseModel.check_if_exists('parties', 'partyName', name) == True:
+            return [409, 'Party name already exists']
+
+        new_party = {
+            'partyName' : name,
+            'hqAddress' : hqAddress,
+            'logoUrl' : logoUrl
+        }
+
+        query = """ INSERT INTO parties (partyName, hqAddress, logoUrl) VALUES (%(partyName)s, %(hqAddress)s, %(logoUrl)s) RETURNING partyId"""
+        cur.execute(query, new_party)
+        partyId = cur.fetchone()[0]
+        con.commit()
+        con.close
+
+
+        created_party = {
+            "partyId" : partyId,
+            "partyName" : name,
+            "hqAddress" : hqAddress,
+            "logoUrl" : logoUrl
+        }
+
+        return [201, created_party]
+
 
     def get_all_parties():
         '''Method for getting all parties'''
 
-        #validates that parties_db is not empty
-        if len(PartyModel.parties_db) <= 0:
-            return [404, 'No Parties to be shown']
-        else:
-            return [200, PartyModel.parties_db]
+        con = database_config.init_test_db()
+        cur = con.cursor()
+
+        query = """SELECT * FROM parties;"""
+        cur.execute(query)
+
+        data = cur.fetchall()
+
+        party_list = []
+
+        for i, items in enumerate(data):
+            partyId, partyName, hqAddress, logoUrl = items
+            party = {
+                "partyId" : partyId,
+                "partyName" : partyName,
+                "hqAddress" : hqAddress,
+                "logoUrl" : logoUrl
+            }
+            party_list.append(party)
+
+        if len(party_list) <= 0:
+            return [404, "No offices to show"]
+
+        return [200, party_list]
 
     def get_specific_party(party_id):
         '''Method for getting a specific party'''
 
-        #iterates through parties_db to find matching party 
-        for party in PartyModel.parties_db:
-            if party['id'] == party_id:
-                return [200, party]
+        con = database_config.init_test_db()
+        cur = con.cursor()
 
-        return [ 404, 'Party does not exist']
+        if BaseModel.check_if_exists('parties', 'partyId', party_id) == False:
+            return [404, "Party not found"]
+
+        query = """SELECT partyId, partyName, hqAddress, logoUrl FROM parties WHERE partyId = {};""".format(party_id)
+        cur.execute(query)
+        data = cur.fetchall()[0]
+        party = {
+            "partyid" : data[0],
+            "partyName" : data[1],
+            "hqAddress" : data[2],
+            "logoUrl" : data[3]
+        }
+
+        return [200, party]
     
     def edit_a_party(party_id, data):
         '''Method for editing a specific party'''
@@ -200,36 +238,45 @@ class PartyModel:
         if not name:
             return [404, 'name cannot be empty']
 
-        #Validates that the name provided does not already exist
-        for party in PartyModel.parties_db:
-            if party['name'] == name:
-                return [400, 'name already exists']
+        if BaseModel.check_if_exists('parties', 'partyName', name) == True:
+            return [409, "Party already exists"]
 
-        for party in PartyModel.parties_db:
-            if party['id'] == party_id:
-                party['name'] = name
-                return [200, party]
+        if BaseModel.check_if_exists('parties', 'partyId', party_id) == False:
+            return [404, "Party doesn't exist"]
 
-        return [404, 'party not found']
+        con = database_config.init_test_db()
+        cur = con.cursor()
+
+        query = """UPDATE parties SET partyName = '{}' WHERE partyId = {};""".format(name, party_id)
+
+        cur.execute(query)
+
+        con.commit()
+        con.close()
+
+        return [200, "Changes made successfully"]
 
     def delete_specific_party(party_id):
         '''Method for deleting a specific party'''
 
-        #loops through parties_db to find matching party id
-        for party in PartyModel.parties_db:
-            if party['id'] == party_id:
-                index = party_id - 1
-                PartyModel.parties_db.pop(index)
-                return [200, 'Party has been succefully deleted']
-        
-        return [404, 'party not found']
+        con = database_config.init_test_db()
+        cur = con.cursor()
+
+        if BaseModel.check_if_exists('parties', 'partyId', party_id) == False:
+            return [404, "No party with ID:{}".format(party_id)]
+
+        query = " DELETE FROM parties WHERE partyId = {}".format(party_id)
+
+        cur.execute(query)
+
+        con.commit()
+        con.close()
+
+        return [200, "Party successfully deleted"]
 
         
 class OfficeModel:
     '''Adds all methods that perfom CRUD operations on offices'''
-
-    #List to store all offices
-    offices_db = []
 
     #list that stores all valids values of type
     office_types = ['Federal', 'Legislative', 'State', 'Local Government']
@@ -332,7 +379,7 @@ class OfficeModel:
         if BaseModel.check_if_exists('offices', 'officeName', name) == True:
             return [409, "office already exists"]
 
-        if BaseModel.check_if_exists('offices', 'officeID', office_id) == False:
+        if BaseModel.check_if_exists('offices', 'officeId', office_id) == False:
             return [404, "office doesn't exist"]
 
         con = database_config.init_test_db()
