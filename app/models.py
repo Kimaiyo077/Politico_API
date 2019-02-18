@@ -277,11 +277,26 @@ class OfficeModel:
     def get_all_offices():
         '''Method to display all offices'''
 
-        #checks if offices_db is empty
-        if len(OfficeModel.offices_db) <= 0:
-            return [404, 'No Offices to be showed']
-        else:
-            return [200, OfficeModel.offices_db]
+        con = database_config.init_test_db()
+        cur = con.cursor()
+
+        query = """SELECT * FROM offices;"""
+        cur.execute(query)
+
+        data = cur.fetchall()
+
+        office_list = []
+
+        for i, items in enumerate(data):
+            officeId, officeType, officeName = items
+            office = {
+                "officeId" : officeId,
+                "officeName" : officeName,
+                "officeType" : officeType
+            }
+            office_list.append(office)
+
+        return [200, office_list]
 
     def get_specific_office(office_id):
         '''Method for getting a specific office'''
