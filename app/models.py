@@ -300,13 +300,22 @@ class OfficeModel:
 
     def get_specific_office(office_id):
         '''Method for getting a specific office'''
-        
-        #loops through all offices to find one with matching id
-        for office in OfficeModel.offices_db:
-            if office['id'] == office_id:
-                return [200, office]
+        con = database_config.init_test_db()
+        cur = con.cursor()
 
-        return [ 404, 'office does not exist']
+        if BaseModel.check_if_exists('offices', 'officeId', office_id) == False:
+            return [404, "Office not found"]
+
+        query = """SELECT officeId, officeName, officeType FROM offices WHERE officeId = {};""".format(office_id)
+        cur.execute(query)
+        data = cur.fetchall()[0]
+        office = {
+            "officeid" : data[0],
+            "officeName" : data[1],
+            "officeType" : data[2]
+        }
+
+        return [200, office]
 
     def edit_specific_office(office_id, data):
         ''' Method for editing a specific office'''
