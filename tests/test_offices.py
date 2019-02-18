@@ -1,7 +1,7 @@
 # third party and local imports
 import unittest
 import json
-from app import create_app
+from app import create_app, database_config
 
 class TestOfficeEndPoint(unittest.TestCase):
     '''This is a test class for testing all office endpoints'''
@@ -9,20 +9,19 @@ class TestOfficeEndPoint(unittest.TestCase):
         self.app = create_app('testing')
         self.client = self.app.test_client()
 
+        database_config.init_test_db() 
+
         self.data={
-            'id' : 1,
             'name': 'Presidential',
             'type': 'Federal'
         }
 
         self.data_2={
-            'id' : 2,
             'name': 'Governor',
             'type': 'Local Government'
         }
 
         self.data_3={
-            'id' : 3,
             'name': 'Parliament',
             'type': 'Local Government'
         }
@@ -32,19 +31,16 @@ class TestOfficeEndPoint(unittest.TestCase):
         }
 
         self.bad_data={
-            'id' : 4,
             'name' : '',
             'type' : 'office' 
         }
 
         self.bad_data2={
-            'id' : 5,
             'name' : 'Environment',
             'type' : ''
         }
 
         self.bad_data3={
-            'id' : 1,
             'name': 'Presidential',
             'type': 'Presidents office'
         }
@@ -70,7 +66,7 @@ class TestOfficeEndPoint(unittest.TestCase):
         self.assertEqual(response.status_code, 400)
 
         response = self.client.post(path='/api/v1/offices',data=json.dumps(self.data), content_type='application/json')
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 409)
         
     def test_get_offices(self):
         '''Test to get all offices'''

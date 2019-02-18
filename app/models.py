@@ -239,7 +239,6 @@ class OfficeModel:
 
         name = data['name'].strip()
         type = data ['type'].strip()
-        id = len(OfficeModel.offices_db) + 1
 
         # validates all inputs so that no field is left empty
         if not name:
@@ -249,41 +248,77 @@ class OfficeModel:
         elif type not in OfficeModel.office_types:
             return [400, 'type must be either: Federal, Legislative, State or Local Government']
 
-        #Loops through all offices to find if name already exists
-        for office in OfficeModel.offices_db:
-            if office['name'] == name:
-                return [400, 'An office with that name already exists']
-        
-        #creates new office and stores data in a dictionary
+        con = database_config.init_test_db()
+        cur = con.cursor()
+
+        if BaseModel.check_if_exists('offices', 'officeName', name) == True:
+            return [409, 'Office name already exists']
+
         new_office = {
-            'id': id,
-            'name' : name,
-            'type' : type
+            'officeName' : name,
+            'officeType' : type
         }
 
-        #appends new office to offices_db
-        OfficeModel.offices_db.append(new_office)
+        query = """ INSERT INTO offices (officeName, officeType) VALUES (%(officeName)s, %(officeType)s) RETURNING officeId"""
+        cur.execute(query, new_office)
+        officeId = cur.fetchone()[0]
+        con.commit()
+        con.close
 
-        return [201, new_office]
+
+        created_office = {
+            "officeId" : officeId,
+            "officeName" : name,
+            "officeType" : type
+        }
+
+        return [201, created_office]
 
     def get_all_offices():
         '''Method to display all offices'''
 
-        #checks if offices_db is empty
-        if len(OfficeModel.offices_db) <= 0:
-            return [404, 'No Offices to be showed']
-        else:
-            return [200, OfficeModel.offices_db]
+        con = database_config.init_test_db()
+        cur = con.cursor()
+
+        query = """SELECT * FROM offices;"""
+        cur.execute(query)
+
+        data = cur.fetchall()
+
+        office_list = []
+
+        for i, items in enumerate(data):
+            officeId, officeType, officeName = items
+            office = {
+                "officeId" : officeId,
+                "officeName" : officeName,
+                "officeType" : officeType
+            }
+            office_list.append(office)
+
+        if len(office_list) <= 0:
+            return [404, "No offices to show"]
+
+        return [200, office_list]
 
     def get_specific_office(office_id):
         '''Method for getting a specific office'''
-        
-        #loops through all offices to find one with matching id
-        for office in OfficeModel.offices_db:
-            if office['id'] == office_id:
-                return [200, office]
+        con = database_config.init_test_db()
+        cur = con.cursor()
 
-        return [ 404, 'office does not exist']
+        if BaseModel.check_if_exists('offices', 'officeId', office_id) == False:
+            return [404, "Office not found"]
+
+        query = """SELECT officeId, officeName, officeType FROM offices WHERE officeId = {};""".format(office_id)
+        cur.execute(query)
+        data = cur.fetchall()[0]
+        office = {
+            "officeid" : data[0],
+            "officeName" : data[1],
+            "officeType" : data[2]
+        }
+
+        return [200, office]
 
     def edit_specific_office(office_id, data):
         ''' Method for editing a specific office'''
@@ -293,27 +328,39 @@ class OfficeModel:
         if not name:
             return [404, 'name cannot be empty']
 
-        #Loops through all offices to find if the name provided already exists
-        for office in OfficeModel.offices_db:
-            if office['name'] == name:
-                return [400, 'name already exists']
         
-        #Iterates through all offices to find matching office
-        for office in OfficeModel.offices_db:
-            if office['id'] == office_id:
-                office['name'] = name
-                return [200, office]
+        if BaseModel.check_if_exists('offices', 'officeName', name) == True:
+            return [409, "office already exists"]
 
-        return [404, 'office not found']
+        if BaseModel.check_if_exists('offices', 'officeID', office_id) == False:
+            return [404, "office doesn't exist"]
+
+        con = database_config.init_test_db()
+        cur = con.cursor()
+
+        query = """UPDATE offices SET officeName = '{}' WHERE officeId = {};""".format(name, office_id)
+
+        cur.execute(query)
+
+        con.commit()
+        con.close()
+
+        return [200, "Changes made successfully"]
 
     def delete_specific_office(office_id):
         '''Method for deleting a specific office'''
         
-        #loops through all offices to find matching office
-        for office in OfficeModel.offices_db:
-            if office['id'] == office_id:
-                index = office_id - 1
-                OfficeModel.offices_db.pop(index)
-                return [200, 'Office has been succefully deleted']
-        
-        return [404, 'office not found']
+        con = database_config.init_test_db()
+        cur = con.cursor()
+
+        if BaseModel.check_if_exists('offices', 'officeId', office_id) == False:
+            return [404, "No office with ID:{}".format(office_id)]
+
+        query = " DELETE FROM offices WHERE officeId = {}".format(office_id)
+
+        cur.execute(query)
+
+        con.commit()
+        con.close()
+
+        return [200, "Office successfully deleted"]
