@@ -239,7 +239,6 @@ class OfficeModel:
 
         name = data['name'].strip()
         type = data ['type'].strip()
-        id = len(OfficeModel.offices_db) + 1
 
         # validates all inputs so that no field is left empty
         if not name:
@@ -249,22 +248,31 @@ class OfficeModel:
         elif type not in OfficeModel.office_types:
             return [400, 'type must be either: Federal, Legislative, State or Local Government']
 
-        #Loops through all offices to find if name already exists
-        for office in OfficeModel.offices_db:
-            if office['name'] == name:
-                return [400, 'An office with that name already exists']
-        
-        #creates new office and stores data in a dictionary
+        con = database_config.init_test_db()
+        cur = con.cursor()
+
+        if BaseModel.check_if_exists('offices', 'officeName', name) == True:
+            return [409, 'Office name already exists']
+
         new_office = {
-            'id': id,
-            'name' : name,
-            'type' : type
+            'officeName' : name,
+            'officeType' : type
         }
 
-        #appends new office to offices_db
-        OfficeModel.offices_db.append(new_office)
+        query = """ INSERT INTO offices (officeName, officeType) VALUES (%(officeName)s, %(officeType)s) RETURNING officeId"""
+        cur.execute(query, new_office)
+        officeId = cur.fetchone()[0]
+        con.commit()
+        con.close
 
-        return [201, new_office]
+
+        created_office = {
+            "officeId" : officeId,
+            "officeName" : name,
+            "officeType" : type
+        }
+
+        return [201, created_office]
 
     def get_all_offices():
         '''Method to display all offices'''
