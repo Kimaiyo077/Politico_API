@@ -296,6 +296,9 @@ class OfficeModel:
             }
             office_list.append(office)
 
+        if len(office_list) <= 0:
+            return [404, "No offices to show"]
+
         return [200, office_list]
 
     def get_specific_office(office_id):
@@ -350,7 +353,7 @@ class OfficeModel:
         con = database_config.init_test_db()
         cur = con.cursor()
 
-        if BaseModel().check_if_exists('offices', 'officeId', office_id) == False:
+        if BaseModel.check_if_exists('offices', 'officeId', office_id) == False:
             return [404, "No office with ID:{}".format(office_id)]
 
         query = " DELETE FROM offices WHERE officeId = {}".format(office_id)
