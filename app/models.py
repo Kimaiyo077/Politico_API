@@ -494,6 +494,34 @@ class OfficeModel:
 
         return [201, res]
 
+    def count_votes(office_id):
+        counted_votes = []
+        candidates = set()
+        results = 0
+
+        con = database_config.init_test_db()
+        cur = con.cursor()
+
+        query = "SELECT * FROM votes WHERE officeId = '{}' ".format(office_id)
+
+        cur.execute(query)
+        votes = cur.fetchall()
+
+        for vote in votes:
+            candidates.add(vote[1])
+      
+        for candidate in candidates:
+            for vote in votes:
+                if vote[1] == candidate:
+                    results += 1
+
+            counted_votes.append({"office" : office_id, "candidate" : candidate, "result" : results})
+
+        con.commit()
+        con.close()
+
+        return [200, counted_votes]
+
 class voteModel(BaseModel):
 
     def create_vote(data):
