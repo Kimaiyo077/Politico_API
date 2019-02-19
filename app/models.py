@@ -458,3 +458,42 @@ class OfficeModel:
         }
 
         return [201, res]
+
+class voteModel(BaseModel):
+
+    def create_vote(candidate_id, user_id):
+
+        if BaseModel.check_if_exists('candidates', 'candidateId', candidate_id) == False:
+            return [404, 'Candidate does not exist']
+        
+        query_one = """ SELECT officeId FROM candidates WHERE candidateId = '{}' RETURNING officeId;""".format(candidate_id)
+
+        con = database_config.init_test_db()
+        cur = con.cursor()
+
+        cur.execute(query_one)
+        office_id = cur.fetchone()[0]
+
+        new_vote = {
+            "officeId" : office_id,
+            "candidateId" : candidate_id,
+            "userId" : user_id
+        }
+
+        query_two = """INSERT INTO vote (candidate,officeId, createdBy) VALUES \ (%(candidateId)s,%(officeId)s,%(userId)s);"""
+
+        try:
+            cur.execute(query_two)
+        except:
+            return [400, 'You have already voted']
+
+        con.commit()
+        con.close()
+
+        vote = {
+            "candidate": candidate_id,
+            "office" : office_id,
+            "created by" : user_id 
+        }
+
+        return [201, vote]
