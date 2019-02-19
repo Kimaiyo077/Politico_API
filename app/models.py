@@ -411,3 +411,36 @@ class OfficeModel:
         con.close()
 
         return [200, "Office successfully deleted"]
+    
+    def register_candidate(office_id, data):
+        '''Method for adding a candidate'''
+        id = data['user_id'].strip()
+
+        con = database_config.init_test_db()
+        cur = con.cursor()
+
+        if BaseModel.check_if_exists('offices', 'officeId', office_id) == False:
+            return [404, "No office with ID:{}".format(office_id)]
+
+        if BaseModel.check_if_exists('users', 'userId', id) == False:
+            return [404, "No user with that ID: {}".format(id)]
+
+        new_candidate = {
+            'officeId' : office_id,
+            'userId' : id
+        }
+        query = """INSERT INTO candidates (officeId, userId) VALUES (%(officeId)s, %(userId)s) RETURNING candidateId"""
+
+        cur.execute(query, new_candidate)
+        candidate_id = cur.fetchall()[0]
+        con.commit()
+        con.close
+
+
+        res = {
+            'CandidateId' : candidate_id,
+            'Office_id' : office_id,
+            'User_id' : id
+        }
+
+        return [201, res]
