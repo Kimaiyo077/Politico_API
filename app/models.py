@@ -3,6 +3,7 @@ import datetime
 import os
 import jwt
 import re
+from functools import wraps
 from app import database_config
 from app.validations import validations
 
@@ -35,6 +36,40 @@ class BaseModel:
             return token.decode()
         except Exception as e:
             return e
+        
+    def auth_token_decoder(token):
+        try:
+            payload = jwt.decode(token, os.getenv('SECRET'))
+            return payload['user']
+
+        except jwt.ExpiredSignatureError:
+            return [401, 'Token has expired. Please log in again.']
+
+        except jwt.InvalidTokenError:
+            return [401, 'Invalid token. Please log in again.']
+
+    def token_required(f):
+
+        @wraps(f)
+        def wrapper_function(*args, **kws):
+            if not 'Authorization' in request.headers:
+               abort(401)
+
+            request.user = None
+            secret = os.getenv('SECRET')
+
+            data = request.headers['Authorization'].encode('ascii','ignore')
+            token = str.replace(str(data), 'Bearer ','')
+
+            try:
+                user = jwt.decode(token, secret, algorithms=['HS256'])['user']
+            except:
+                abort(401)
+
+            return f(user, *args, **kws)
+        
+        return wrapper_function
+
 
 class userModel(BaseModel):
     
@@ -458,3 +493,45 @@ class OfficeModel:
         }
 
         return [201, res]
+
+class voteModel(BaseModel):
+
+    def create_vote(data):
+
+        candidate_id = data['candidate']
+        user_id = data['user']
+
+        if BaseModel.check_if_exists('candidates', 'candidateId', candidate_id) == False:
+            return [404, 'Candidate does not exist']
+        
+        query_one = """ SELECT officeId FROM candidates WHERE candidateId = '{}' RETURNING officeId;""".format(candidate_id)
+
+        con = database_config.init_test_db()
+        cur = con.cursor()
+
+        cur.execute(query_one)
+        office_id = cur.fetchone()[0]
+
+        new_vote = {
+            "officeId" : office_id,
+            "candidateId" : candidate_id,
+            "userId" : user_id
+        }
+
+        query_two = """INSERT INTO vote (candidate,officeId, createdBy) VALUES \ (%(candidateId)s,%(officeId)s,%(userId)s);"""
+
+        try:
+            cur.execute(query_two)
+        except:
+            return [400, 'You have already voted']
+
+        con.commit()
+        con.close()
+
+        vote = {
+            "candidate": candidate_id,
+            "office" : office_id,
+            "created by" : user_id 
+        }
+
+        return [201, vote]
