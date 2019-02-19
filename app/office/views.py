@@ -100,4 +100,19 @@ def add_candidate(office_id):
             'error' : response[1]
         }), response[0])
 
+@office.route('/offices/<office_id>/results', methods['GET'])
+def print_results(office_id):
+
+    response = OfficeModel.count_votes(office_id)
+
+    if response[0] == 200:
+        return make_response(jsonify({
+            'status' : response[0],
+            'message' : response[1]
+        }), response[0])
+    else:
+        return make_response(jsonify({
+            'status' : response[0],
+            'error' : response[1]
+        }), response[0])
 
