@@ -82,3 +82,22 @@ def delete_a_office(office_id):
             'status' : response[0],
             'error' : response[1]
         }), response[0])
+
+@office.route('/offices/<office_id>/register', methods=['POST'])
+def add_candidate(office_id):
+    data = request.get_json()
+
+    response = OfficeModel.register_candidate(office_id, data)
+
+    if response[0] == 201:
+        return make_response(jsonify({
+            'status' : response[0],
+            'message' : response[1]
+        }), response[0])
+    else:
+        return make_response(jsonify({
+            'status' : response[0],
+            'error' : response[1]
+        }), response[0])
+
+
