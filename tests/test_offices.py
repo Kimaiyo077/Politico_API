@@ -71,6 +71,9 @@ class TestOfficeEndPoint(unittest.TestCase):
 
         response = self.client.post(path='/api/v1/offices',data=json.dumps(self.data), content_type='application/json')
         self.assertEqual(response.status_code, 409)
+
+        response = self.client.post(path='/api/v1/offices/1/register', data=json.dumps(self.candidate), content_type='application/json')
+        self.assertEqual(response.status_code, 201)
         
     def test_get_offices(self):
         '''Test to get all offices'''
@@ -92,8 +95,6 @@ class TestOfficeEndPoint(unittest.TestCase):
         response = self.client.delete(path='/api/v1/offices/3', content_type='application/json')
         self.assertEqual(response.status_code, 200)
 
-    def test_register_a_candidate(self):
-        '''Test for registering a new candidate'''
         response = self.client.post(path='/api/v1/offices/1/register', data=json.dumps(self.candidate), content_type='application/json')
         self.assertEqual(response.status_code, 201)
 
