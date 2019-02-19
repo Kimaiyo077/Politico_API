@@ -23,5 +23,7 @@ def create_app(config_name):
     app.register_blueprint(office, url_prefix='/api/v1')
     from app.auth import auth
     app.register_blueprint(auth, url_prefix='/api/v2')
+    from app.vote import vote
+    app.register_blueprint(vote, url_prefix='/api/v2')
     
     return app

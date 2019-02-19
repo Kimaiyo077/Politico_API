@@ -75,7 +75,7 @@ def tables():
     candidates = """ CREATE TABLE IF NOT EXISTS candidates (
         candidateId SERIAL UNIQUE,
         officeId integer REFERENCES offices (officeId) ON DELETE CASCADE,
-        userId integer REFERENCES users (userId) ON DELETE CASCADE
+        userId integer REFERENCES users (userId) ON DELETE CASCADE,
         UNIQUE(officeId, userId)); """
 
     votes = """ CREATE TABLE IF NOT EXISTS votes (
@@ -83,7 +83,7 @@ def tables():
         officeId integer REFERENCES offices (officeId) ON DELETE CASCADE,
         candidate integer REFERENCES candidates (candidateId) ON DELETE CASCADE,
         createdOn DATE DEFAULT CURRENT_TIMESTAMP,
-        createdBy integer REFERENCES users (userId) ON DELETE SET NULL
+        createdBy integer REFERENCES users (userId) ON DELETE SET NULL,
         UNIQUE(officeId,createdBy));"""
 
     queries = [users, offices, parties, candidates, votes]

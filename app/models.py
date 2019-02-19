@@ -70,7 +70,7 @@ class BaseModel:
         
         return wrapper_function
 
-        
+
 class userModel(BaseModel):
     
     def create_account(data):
@@ -496,7 +496,10 @@ class OfficeModel:
 
 class voteModel(BaseModel):
 
-    def create_vote(candidate_id, user_id):
+    def create_vote(data):
+
+        candidate_id = data['candidate']
+        user_id = data['user']
 
         if BaseModel.check_if_exists('candidates', 'candidateId', candidate_id) == False:
             return [404, 'Candidate does not exist']
