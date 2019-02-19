@@ -45,6 +45,10 @@ class TestOfficeEndPoint(unittest.TestCase):
             'type': 'Presidents office'
         }
 
+        self.candidate={
+            "user_id" : 1 
+        } 
+
     def test_add_office(self):
         '''Test adding a new office'''
         response = self.client.post(path='/api/v1/offices',data=json.dumps(self.data), content_type='application/json')
@@ -87,6 +91,11 @@ class TestOfficeEndPoint(unittest.TestCase):
         '''Test for deleting a specific office'''
         response = self.client.delete(path='/api/v1/offices/3', content_type='application/json')
         self.assertEqual(response.status_code, 200)
+
+    def test_register_a_candidate(self):
+        '''Test for registering a new candidate'''
+        response = self.client.post(path='/api/v1/offices/1/register', data=json.dumps(self.candidate), content_type='application/json')
+        self.assertEqual(response.status_code, 201)
 
 if __name__ == '__main__':
     unittest.main()

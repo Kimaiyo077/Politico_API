@@ -414,7 +414,7 @@ class OfficeModel:
     
     def register_candidate(office_id, data):
         '''Method for adding a candidate'''
-        id = data['user_id'].strip()
+        id = data['user_id']
 
         con = database_config.init_test_db()
         cur = con.cursor()
