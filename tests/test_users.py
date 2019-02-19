@@ -17,8 +17,8 @@ class TestUserEndpoints(unittest.TestCase):
             'lastname' : 'Kimaiyo',
             'othername' : 'Kibiwot',
             'email' : 'email@email.com',
-            'phoneNumber': '9876543210',
-            'passportUrl' : 'passport.com',
+            'phoneNumber': '0712345678',
+            'passportUrl' : 'https://passport.com',
             'password' : 'password'
         }
 
@@ -28,8 +28,8 @@ class TestUserEndpoints(unittest.TestCase):
             'lastname' : 'Kimaiyo',
             'othername' : 'Kibiwot',
             'email' : 'email@email.com',
-            'phoneNumber': '9876543210',
-            'passportUrl' : 'passport.com',
+            'phoneNumber': '0712345678',
+            'passportUrl' : 'https://passport.com',
             'password' : 'password',
         }
 
