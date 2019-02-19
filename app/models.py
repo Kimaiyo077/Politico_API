@@ -2,7 +2,9 @@ import psycopg2
 import datetime
 import os
 import jwt
+import re
 from app import database_config
+from app.validations import validations
 
 class BaseModel:
     def check_if_exists(table_name, field_name, value):
@@ -42,7 +44,7 @@ class userModel(BaseModel):
         lastname = data['lastname'].strip()
         othername = data['othername'].strip()
         email = data['email'].strip()
-        phoneNumber = data['phoneNumber'].strip()
+        phoneNumber = data['phoneNumber']
         passportUrl = data ['passportUrl'].strip()
         password = data['password'].strip()
 
@@ -58,7 +60,16 @@ class userModel(BaseModel):
             return [400, 'email cannot be empty']
         elif not password:
             return [400, 'password cannot be empty']
-            
+
+        if not validations.validate_email(email):
+            return [400, 'invalid email format']
+        elif not validations.validate_url(passportUrl):
+            return [400, 'invalid url']
+
+        if phoneNumber:
+            if not validations.validate_phone_number(phoneNumber):
+                return [400, 'Invalid phone number']
+
         con = database_config.init_test_db()
         cur = con.cursor()
 
@@ -141,7 +152,7 @@ class PartyModel:
         #Initializes all the required fields for party object
         name = data['name'].strip()
         hqAddress = data['hqAddress'].strip()
-        logoUrl = data['logoUrl'].strip()
+        logoUrl = data['logoUrl']
 
         #Validates that all fields are filled and that none of them are left empty
         if not name:
@@ -150,6 +161,9 @@ class PartyModel:
             return [400 ,'hqAddress cannot be empty']
         elif not logoUrl:
             return [400, 'logoUrl cannot be empty']
+
+        if not validations.validate_url(logoUrl):
+            return [400, 'logo URL is not a valid url']
         
         con = database_config.init_test_db()
         cur = con.cursor()
