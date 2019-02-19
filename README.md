@@ -4,6 +4,20 @@
 
 Politico_API is an application that enables users to communicate with servers to access certian information. It also allows admin users to create new information and to edit or delete existing information.
 
+## Heroku application links
+
+[Heroku app](https://isaac-politico-api-heroku.herokuapp.com/api/v1/offices)
+
+## Pivotal Tracker Project Board
+
+[Pivotal Tracker](https://www.pivotaltracker.com/n/projects/2241889)
+
+## API Documentation
+
+[Documentation](https://politico8.docs.apiary.io/#)
+
+[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/c55fe075d8c6b60f275f)
+
 # Required Features
 
 1. Admin should be able to create political office.
@@ -145,15 +159,3 @@ Expected response
     'status' : 200
 }
 ```
-
-## Heroku application links
-
-[Heroku app](https://isaac-politico-api-heroku.herokuapp.com/api/v1/offices)
-
-## Pivotal Tracker Project Board
-
-[Pivotal Tracker](https://www.pivotaltracker.com/n/projects/2241889)
-
-## API Documentation
-
-[Documentation](https://politico8.docs.apiary.io/#)
