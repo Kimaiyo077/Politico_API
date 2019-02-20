@@ -44,8 +44,7 @@ def add_office():
 @office.route('/offices/<office_id>', methods=['GET'])
 @jwt_required
 def get_a_specific_office(office_id):
-    current_user = get_jwt_identity()
-    response = OfficeModel.get_specific_office(int(office_id), current_user)
+    response = OfficeModel.get_specific_office(int(office_id))
 
     if response[0] == 200:
         return make_response(jsonify({
@@ -60,10 +59,10 @@ def get_a_specific_office(office_id):
   
 @office.route('/offices/<office_id>', methods=['PATCH'])
 @jwt_required
-def edit_a_specific_office(office_id, current_user):
+def edit_a_specific_office(office_id):
     current_user = get_jwt_identity()
     data = request.get_json()
-    response = OfficeModel.edit_specific_office(int(office_id), data)
+    response = OfficeModel.edit_specific_office(int(office_id), data, current_user)
 
     if response[0] == 200:
         return make_response(jsonify({

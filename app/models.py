@@ -370,16 +370,13 @@ class OfficeModel:
 
         return [200, office_list]
 
-    def get_specific_office(office_id, current_user):
+    def get_specific_office(office_id):
         '''Method for getting a specific office'''
         con = database_config.init_test_db()
         cur = con.cursor()
 
         if BaseModel.check_if_exists('offices', 'officeId', office_id) == False:
             return [404, "Office not found"]
-
-        if BaseModel.check_if_admin(current_user) == False:
-            return [401, 'Nice try, But you are not authorized']
 
         query = """SELECT officeId, officeName, officeType FROM offices WHERE officeId = {};""".format(office_id)
         cur.execute(query)
