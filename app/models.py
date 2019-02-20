@@ -31,6 +31,20 @@ class BaseModel:
             return False
         else:    
             return True
+    
+    def check_if_not_null(data):
+
+        for i in data:
+            if not data[i]:
+                return [404, "{} cannot be empty".format(i)]
+
+        return None
+
+    def create_database_cur(): 
+        con = database_config.init_test_db()
+        cur = con.cursor()
+
+        return con, cur
 
 class userModel(BaseModel):
     
@@ -150,13 +164,17 @@ class PartyModel:
         hqAddress = data['hqAddress'].strip()
         logoUrl = data['logoUrl']
 
+         new_party = {
+            'partyName' : name,
+            'hqAddress' : hqAddress,
+            'logoUrl' : logoUrl
+        }
+
         #Validates that all fields are filled and that none of them are left empty
-        if not name:
-            return [400 ,'name cannot be empty']
-        elif not hqAddress:
-            return [400 ,'hqAddress cannot be empty']
-        elif not logoUrl:
-            return [400, 'logoUrl cannot be empty']
+        valid = BaseModel.check_if_not_null(new_party)
+
+        if valid != None:
+            return valid
 
         if not validations.validate_url(logoUrl):
             return [400, 'logo URL is not a valid url']
@@ -170,11 +188,6 @@ class PartyModel:
         if BaseModel.check_if_admin(current_user) == False:
             return [401, 'Nice try, But you are not authorized']
 
-        new_party = {
-            'partyName' : name,
-            'hqAddress' : hqAddress,
-            'logoUrl' : logoUrl
-        }
 
         query = """ INSERT INTO parties (partyName, hqAddress, logoUrl) VALUES (%(partyName)s, %(hqAddress)s, %(logoUrl)s) RETURNING partyId"""
         cur.execute(query, new_party)
@@ -306,12 +319,19 @@ class OfficeModel:
         name = data['name'].strip()
         type = data ['type'].strip()
 
+         new_office = {
+            'officeName' : name,
+            'officeType' : type
+        }
+
+
         # validates all inputs so that no field is left empty
-        if not name:
-            return [400 ,'name cannot be empty']
-        elif not type:
-            return [400, 'type cannot be empty']
-        elif type not in OfficeModel.office_types:
+        valid = BaseModel.check_if_not_null(new_office)
+
+        if valid != None:
+            return valid
+
+        if type not in OfficeModel.office_types:
             return [400, 'type must be either: Federal, Legislative, State or Local Government']
 
         con = database_config.init_test_db()
@@ -323,11 +343,7 @@ class OfficeModel:
         if BaseModel.check_if_admin(current_user) == False:
             return [401, 'Nice try, But you are not authorized']
 
-        new_office = {
-            'officeName' : name,
-            'officeType' : type
-        }
-
+       
         query = """ INSERT INTO offices (officeName, officeType) VALUES (%(officeName)s, %(officeType)s) RETURNING officeId"""
         cur.execute(query, new_office)
         officeId = cur.fetchone()[0]
