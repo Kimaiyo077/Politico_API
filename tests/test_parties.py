@@ -37,39 +37,39 @@ class TestPartyEndPoint(unittest.TestCase):
         }
     def test_add_party(self):
         '''Test adding a party'''
-        response = self.client.post(path='/api/v1/parties',data=json.dumps(self.data), content_type='application/json')
+        response = self.client.post(path='/api/v2/parties',data=json.dumps(self.data), content_type='application/json')
         self.assertEqual(response.status_code, 201)
 
-        response = self.client.post(path='/api/v1/parties',data=json.dumps(self.data_2), content_type='application/json')
+        response = self.client.post(path='/api/v2/parties',data=json.dumps(self.data_2), content_type='application/json')
         self.assertEqual(response.status_code, 201)
 
-        response = self.client.post(path='/api/v1/parties',data=json.dumps(self.bad_data), content_type='application/json')
+        response = self.client.post(path='/api/v2/parties',data=json.dumps(self.bad_data), content_type='application/json')
         self.assertEqual(response.status_code, 400)
 
-        response = self.client.post(path='/api/v1/parties',data=json.dumps(self.bad_data2), content_type='application/json')
+        response = self.client.post(path='/api/v2/parties',data=json.dumps(self.bad_data2), content_type='application/json')
         self.assertEqual(response.status_code, 400)
 
-        response = self.client.post(path='/api/v1/parties',data=json.dumps(self.data), content_type='application/json')
+        response = self.client.post(path='/api/v2/parties',data=json.dumps(self.data), content_type='application/json')
         self.assertEqual(response.status_code, 409)
 
     def test_get_parties(self):
         '''Test to get all parties'''
-        response = self.client.get(path='/api/v1/parties', content_type='application/json')
+        response = self.client.get(path='/api/v2/parties', content_type='application/json')
         self.assertEqual(response.status_code, 200)
     
     def test_get_a_party(self):
         '''Test to get a specific party'''
-        response = self.client.get(path='/api/v1/parties/1', content_type='application/json')
+        response = self.client.get(path='/api/v2/parties/1', content_type='application/json')
         self.assertEqual(response.status_code, 200)
 
     def test_edit_a_party(self):
         '''Test to edit a specific party'''
-        response = self.client.patch(path='/api/v1/parties/1/name', data=json.dumps(self.edit_data), content_type='application/json')
+        response = self.client.patch(path='/api/v2/parties/1/name', data=json.dumps(self.edit_data), content_type='application/json')
         self.assertEqual(response.status_code, 200)
 
     def test_delete_a_party(self):
         '''Test to delete a specific party'''
-        response = self.client.delete(path='/api/v1/parties/2', content_type='application/json')
+        response = self.client.delete(path='/api/v2/parties/2', content_type='application/json')
         self.assertEqual(response.status_code, 200)
     
 if __name__ == '__main__':

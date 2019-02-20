@@ -1,9 +1,8 @@
 import psycopg2
 import datetime
 import os
-import jwt
 import re
-from functools import wraps
+from flask_jwt_extended import create_access_token
 from app import database_config
 from app.validations import validations
 
@@ -20,56 +19,18 @@ class BaseModel:
         else:
             return False
 
-    def auth_token_encoder(user_id):
-        try:
-            payload = {
-                'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=60),
-                'iat': datetime.datetime.utcnow(),
-                'user': user_id
-            }
-            token = jwt.encode(
-                payload,
-                os.getenv('SECRET'),
-                algorithm='HS256'
-            )
+    def check_if_admin(value):
+        con = database_config.init_test_db()
+        cur = con.cursor()
+        query = """SELECT isadmin FROM users WHERE email = '{}';""".format(value)
 
-            return token.decode()
-        except Exception as e:
-            return e
-        
-    def auth_token_decoder(token):
-        try:
-            payload = jwt.decode(token, os.getenv('SECRET'))
-            return payload['user']
+        cur.execute(query)
+        isadmin = cur.fetchall()
 
-        except jwt.ExpiredSignatureError:
-            return [401, 'Token has expired. Please log in again.']
-
-        except jwt.InvalidTokenError:
-            return [401, 'Invalid token. Please log in again.']
-
-    def token_required(f):
-
-        @wraps(f)
-        def wrapper_function(*args, **kws):
-            if not 'Authorization' in request.headers:
-               abort(401)
-
-            request.user = None
-            secret = os.getenv('SECRET')
-
-            data = request.headers['Authorization'].encode('ascii','ignore')
-            token = str.replace(str(data), 'Bearer ','')
-
-            try:
-                user = jwt.decode(token, secret, algorithms=['HS256'])['user']
-            except:
-                abort(401)
-
-            return f(user, *args, **kws)
-        
-        return wrapper_function
-
+        if isadmin != True:
+            return False
+        else:    
+            return True
 
 class userModel(BaseModel):
     
@@ -130,7 +91,7 @@ class userModel(BaseModel):
         con.commit()
         con.close
 
-        token = BaseModel.auth_token_encoder(userId)
+        token = create_access_token(identity=userId)
 
 
         registered_user = {
@@ -169,7 +130,7 @@ class userModel(BaseModel):
 
         for detail in res:
             if user_email == detail['email'] and user_password == detail['password']:
-                token = BaseModel.auth_token_encoder(detail['email'])
+                token = create_access_token(detail['email'])
                 data = {
                     'userId' : detail['userId'],
                     'email' : detail['email']
@@ -181,7 +142,7 @@ class userModel(BaseModel):
 class PartyModel:
     '''Adds all functions that perfom CRUD operations on parties'''
 
-    def create_party(data):
+    def create_party(data, current_user):
         '''Method for creating new party'''
 
         #Initializes all the required fields for party object
@@ -205,6 +166,9 @@ class PartyModel:
 
         if BaseModel.check_if_exists('parties', 'partyName', name) == True:
             return [409, 'Party name already exists']
+        
+        if BaseModel.check_if_admin(current_user) == False:
+            return [401, 'Nice try, But you are not authorized']
 
         new_party = {
             'partyName' : name,
@@ -278,7 +242,7 @@ class PartyModel:
 
         return [200, party]
     
-    def edit_a_party(party_id, data):
+    def edit_a_party(party_id, data, current_user):
         '''Method for editing a specific party'''
 
         name = data['name'].strip()
@@ -292,6 +256,9 @@ class PartyModel:
 
         if BaseModel.check_if_exists('parties', 'partyId', party_id) == False:
             return [404, "Party doesn't exist"]
+        
+        if BaseModel.check_if_admin(current_user) == False:
+            return [401, 'Nice try, But you are not authorized']
 
         con = database_config.init_test_db()
         cur = con.cursor()
@@ -305,7 +272,7 @@ class PartyModel:
 
         return [200, "Changes made successfully"]
 
-    def delete_specific_party(party_id):
+    def delete_specific_party(party_id, current_user):
         '''Method for deleting a specific party'''
 
         con = database_config.init_test_db()
@@ -313,6 +280,9 @@ class PartyModel:
 
         if BaseModel.check_if_exists('parties', 'partyId', party_id) == False:
             return [404, "No party with ID:{}".format(party_id)]
+
+        if BaseModel.check_if_admin(current_user) == False:
+            return [401, 'Nice try, But you are not authorized']
 
         query = " DELETE FROM parties WHERE partyId = {}".format(party_id)
 
@@ -330,7 +300,7 @@ class OfficeModel:
     #list that stores all valids values of type
     office_types = ['Federal', 'Legislative', 'State', 'Local Government']
 
-    def create_office(data):
+    def create_office(data, current_user):
         '''Method to create a new office'''
 
         name = data['name'].strip()
@@ -349,6 +319,9 @@ class OfficeModel:
 
         if BaseModel.check_if_exists('offices', 'officeName', name) == True:
             return [409, 'Office name already exists']
+
+        if BaseModel.check_if_admin(current_user) == False:
+            return [401, 'Nice try, But you are not authorized']
 
         new_office = {
             'officeName' : name,
@@ -416,9 +389,11 @@ class OfficeModel:
 
         return [200, office]
 
-    def edit_specific_office(office_id, data):
+    def edit_specific_office(office_id, data, current_user):
         ''' Method for editing a specific office'''
 
+        if BaseModel.check_if_admin(current_user) == False:
+            return [401, 'Nice try, But you are not authorized']
         name = data['name'].strip()
         #validates that input provided is not empty
         if not name:
@@ -443,7 +418,7 @@ class OfficeModel:
 
         return [200, "Changes made successfully"]
 
-    def delete_specific_office(office_id):
+    def delete_specific_office(office_id, current_user):
         '''Method for deleting a specific office'''
         
         con = database_config.init_test_db()
@@ -451,6 +426,9 @@ class OfficeModel:
 
         if BaseModel.check_if_exists('offices', 'officeId', office_id) == False:
             return [404, "No office with ID:{}".format(office_id)]
+
+        if BaseModel.check_if_admin(current_user) == False:
+            return [401, 'Nice try, But you are not authorized']
 
         query = " DELETE FROM offices WHERE officeId = {}".format(office_id)
 
@@ -497,22 +475,22 @@ class OfficeModel:
     def count_votes(office_id):
         counted_votes = []
         candidates = set()
-        results = 0
 
         con = database_config.init_test_db()
         cur = con.cursor()
 
-        query = "SELECT * FROM votes WHERE officeId = '{}' ".format(office_id)
+        query = """SELECT * FROM votes WHERE officeId = '{}'""".format(office_id)
 
         cur.execute(query)
         votes = cur.fetchall()
 
         for vote in votes:
-            candidates.add(vote[1])
-      
+            candidates.add(vote[2])
+
         for candidate in candidates:
+            results = 0
             for vote in votes:
-                if vote[1] == candidate:
+                if vote[2] == candidate:
                     results += 1
 
             counted_votes.append({"office" : office_id, "candidate" : candidate, "result" : results})
@@ -532,13 +510,13 @@ class voteModel(BaseModel):
         if BaseModel.check_if_exists('candidates', 'candidateId', candidate_id) == False:
             return [404, 'Candidate does not exist']
         
-        query_one = """ SELECT officeId FROM candidates WHERE candidateId = '{}' RETURNING officeId;""".format(candidate_id)
+        query_one = """ SELECT officeId FROM candidates WHERE candidateId = '{}' ;""".format(candidate_id)
 
         con = database_config.init_test_db()
         cur = con.cursor()
 
         cur.execute(query_one)
-        office_id = cur.fetchone()[0]
+        office_id = cur.fetchone()
 
         new_vote = {
             "officeId" : office_id,
@@ -546,10 +524,10 @@ class voteModel(BaseModel):
             "userId" : user_id
         }
 
-        query_two = """INSERT INTO vote (candidate,officeId, createdBy) VALUES \ (%(candidateId)s,%(officeId)s,%(userId)s);"""
+        query_two = """INSERT INTO votes (officeId, candidate, createdBy) VALUES (%(officeId)s,%(candidateId)s,%(userId)s);"""
 
         try:
-            cur.execute(query_two)
+            cur.execute(query_two, new_vote)
         except:
             return [400, 'You have already voted']
 
