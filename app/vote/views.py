@@ -10,7 +10,7 @@ def cast_vote():
 
     response = voteModel.create_vote(data)
     
-    if response[0] == 200:
+    if response[0] == 201:
         return make_response(jsonify({
             'status' : response[0],
             'data' : response[1]
