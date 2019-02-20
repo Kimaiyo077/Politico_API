@@ -1,29 +1,16 @@
 # third party and local imports 
 from flask import jsonify, make_response, request
-from app.models import OfficeModel
+from app.models import OfficeModel, BaseModel
 from app.office import office
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
-
-def response_message(response):
-    if response[0] == 201 or response[0] == 200:
-        return make_response(jsonify({
-            'status' : response[0],
-            'token' : response[1],
-            'User' : response[2]
-        }), response[0])
-    else:
-        return make_response(jsonify({
-            'status' : response[0],
-            'error' : response[1]
-        }), response[0])
 
 
 @office.route('/offices', methods=['GET'])
 @jwt_required
 def get_all_offices():
     response = OfficeModel.get_all_offices()
-    message = response_message(response)
+    message = BaseModel.create_response(response)
 
     return message
 
@@ -35,7 +22,7 @@ def add_office():
     current_user = get_jwt_identity()
     response = OfficeModel.create_office(data, current_user)
 
-    message = response_message(response)
+    message = BaseModel.create_response(response)
     return message
 
 @office.route('/offices/<office_id>', methods=['GET'])
@@ -43,7 +30,7 @@ def add_office():
 def get_a_specific_office(office_id):
     response = OfficeModel.get_specific_office(int(office_id))
 
-    message = response_message(response)
+    message = BaseModel.create_response(response)
     return message
   
 @office.route('/offices/<office_id>', methods=['PATCH'])
@@ -53,7 +40,7 @@ def edit_a_specific_office(office_id):
     data = request.get_json()
     response = OfficeModel.edit_specific_office(int(office_id), data, current_user)
 
-    message = response_message(response)
+    message = BaseModel.create_response(response)
     return message
 
 @office.route('/offices/<office_id>', methods=['DELETE'])
@@ -62,7 +49,7 @@ def delete_a_office(office_id):
     current_user = get_jwt_identity()
     response = OfficeModel.delete_specific_office(int(office_id), current_user)
 
-    message = response_message(response)
+    message = BaseModel.create_response(response)
     return message
 
 @office.route('/offices/<office_id>/register', methods=['POST'])
@@ -72,7 +59,7 @@ def add_candidate(office_id):
     data = request.get_json()
     response = OfficeModel.register_candidate(office_id, data, current_user)
 
-    message = response_message(response)
+    message = BaseModel.create_response(response)
     return message
 
 @office.route('/offices/<office_id>/results', methods=['GET'])
@@ -80,6 +67,6 @@ def add_candidate(office_id):
 def print_results(office_id):
     response = OfficeModel.count_votes(office_id)
 
-    message = response_message(response)
+    message = BaseModel.create_response(response)
     return message
 

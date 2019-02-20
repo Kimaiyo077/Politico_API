@@ -46,6 +46,20 @@ class BaseModel:
 
         return con, cur
 
+    def create_response(response):
+        if response[0] == 201 or response[0] == 200:
+            return make_response(jsonify({
+                'status' : response[0],
+                'token' : response[1],
+                'User' : response[2]
+            }), response[0])
+        else:
+            return make_response(jsonify({
+                'status' : response[0],
+                'error' : response[1]
+            }), response[0])
+
+            
 class userModel(BaseModel):
     
     def create_account(data):

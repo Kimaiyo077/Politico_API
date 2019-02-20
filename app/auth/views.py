@@ -20,15 +20,15 @@ def response_message(response):
 @auth.route('/auth/signup', methods=['POST'])
 def register_user():
     data = request.get_json()
-    response = userModel.create_account(data)
-    message = response_message(response)
+    resp = userModel.create_account(data)
 
+    message = response_message(resp)
     return message
 
 @auth.route('/auth/login', methods=['POST'])
 def user_login():
     data = request.get_json()
-    response = userModel.user_sign_in(data)
-    message = response_message(response)
+    resp = userModel.user_sign_in(data)
 
+    message = response_message(resp)
     return message
