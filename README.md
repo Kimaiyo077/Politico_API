@@ -6,7 +6,7 @@ Politico_API is an application that enables users to communicate with servers to
 
 ## Heroku application links
 
-[Heroku app](https://isaac-politico-api-heroku.herokuapp.com/api/v1/offices)
+[Heroku app](https://isaac-politico-api-heroku.herokuapp.com/api/v2/offices)
 
 ## Pivotal Tracker Project Board
 
@@ -58,24 +58,28 @@ After the configuration, you will run the app uing the following commands
 
 | Method  | API Endpoint                  | Description                   |
 | ------- | ----------------------------- | ----------------------------- |
-| `GET`   | `/api/v1/offices`             | View all offices              |
-| `POST`  | `/api/v1/offices`          | Add a new office to the list  |
-| `PATCH` | `/api/v1/offices/<office_id>` | update the name of a specific office |
-| `GET`   | `/api/v1/offices/<office_id>` | View a specific party from the list |
-| `DELETE`| `/api/v1/offices/<office_id>`  | Deletes a specific office     |
-| `GET`   | `/api/v1/parties`             | Views all parties in the list |
-| `POST`  | `/api/v1/parties`            | Adds a new party to the list  |
-| `PATCH` | `/api/v1/parties/<party_id>/name` | Edit name of a specific party |
-| `GET`   | `/api/v1/parties/<party_id>`  | View a specific party         |
-| `DELETE`| `/api/v1/parties/<party_id>`  | Deletes a specific party      |
+| `GET`   | `/api/v2/offices`             | View all offices              |
+| `POST`  | `/api/v2/offices`          | Add a new office to the list  |
+| `PATCH` | `/api/v2/offices/<office_id>` | update the name of a specific office |
+| `GET`   | `/api/v2/offices/<office_id>` | View a specific party from the list |
+| `DELETE`| `/api/v2/offices/<office_id>`  | Deletes a specific office     |
+| `GET`   | `/api/v2/parties`             | Views all parties in the list |
+| `POST`  | `/api/v2/parties`            | Adds a new party to the list  |
+| `PATCH` | `/api/v2/parties/<party_id>` | Edit name of a specific party |
+| `GET`   | `/api/v2/parties/<party_id>`  | View a specific party         |
+| `DELETE`| `/api/v2/parties/<party_id>`  | Deletes a specific party      |
 | `POST`  | `/api/v2/auth/signup`         | Create a user account         |
 | `POST`  | `/api/v2/auth/login`          | Allows users to log in        |
+| `POST`  | `/api/v2/offices/<office_id>/register`  | Allows admin to register a candidate|
+| `GET`   | `/api/v2/offices/<office_id>/candidates`| Allows users to view candidates|
+| `POST`  | `/api/v2/votes`               | Allows users to cast votes   |
+| `GET`   | `/api/v2/offices/<office_id>/results` | ALlows users to view the results of a particular office |
 
 ## API Payloads
 
 ### Creating a new office
 
-`/api/v1/offices`
+`/api/v2/offices`
 
 Payload
 
@@ -97,7 +101,7 @@ Expected response
 
 ### Updating an existing offices name
 
-`/api/v1/offices/1`
+`/api/v2/offices/1`
 
 Payload
 
@@ -117,7 +121,7 @@ Expected response
 
 ### Add new party
 
-`/api/v1/parties`
+`/api/v2/parties`
 
 Payload
 
@@ -141,7 +145,7 @@ Expected response
 
 ### Update an existing party
 
-`/api/v1/parties/1/name`
+`/api/v2/parties/1`
 
 Payload
 

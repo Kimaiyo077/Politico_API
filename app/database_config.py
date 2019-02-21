@@ -7,21 +7,13 @@ test_uri = os.environ['DATABASE_URL']
 
 
 def connection(url):
+    '''Function for connecting to a postgres database'''
     con = psycopg2.connect(url)
     return con
 
-def init_db():
-    con = connection(uri)
-    cur = con.cursor()
-    queries = tables()
-
-    for query in queries:
-        cur.execute(query)
-    con.commit()
-
-    return con
 
 def init_test_db():
+    '''Initializes a database and creates a cursor to manipulate the database'''
     con = connection(test_uri)
     cur = con.cursor()
     queries = tables()
@@ -33,6 +25,7 @@ def init_test_db():
     return con
 
 def destroy_db():
+    '''Function for destroying database tables'''
     con = connection(test_uri)
     cur = con.cursor()
 
@@ -48,6 +41,8 @@ def destroy_db():
     con.commit()
 
 def tables():
+    '''Function that returns all queries for creation of tables'''
+    
     users = """ CREATE TABLE IF NOT EXISTS users (
         userId SERIAL UNIQUE,
         nationalId NUMERIC NOT NULL,
@@ -74,6 +69,7 @@ def tables():
     
     candidates = """ CREATE TABLE IF NOT EXISTS candidates (
         candidateId SERIAL UNIQUE,
+        partyId integer REFERENCES parties (partyId) ON DELETE CASCADE,
         officeId integer REFERENCES offices (officeId) ON DELETE CASCADE,
         userId integer UNIQUE REFERENCES users (userId) ON DELETE CASCADE,
         UNIQUE(officeId, userId)); """

@@ -1,13 +1,18 @@
+# Third party imports
 import psycopg2
 import datetime
 import os
 import re
 from flask_jwt_extended import create_access_token
 from flask import make_response, jsonify
+
+#Local imports
 from app import database_config
 from app.validations import validations
 
 class BaseModel:
+    ''' Base class that holds methods that needs to be reused by other classes'''
+
     def check_if_exists(table_name, field_name, value):
         con = database_config.init_test_db()
         cur = con.cursor()
@@ -28,6 +33,7 @@ class BaseModel:
             return True
         else:
             return False
+            
     def check_if_not_null(data):
 
         for i in data:
@@ -48,8 +54,18 @@ class BaseModel:
                 'error' : response[1]
             }), response[0])
 
-            
+    def get_name(name, table_name, field_name, value):
+        con = database_config.init_test_db()
+        cur = con.cursor()
+        query = """SELECT {} FROM {} WHERE {}='{}';""".format(name, table_name, field_name, value)
+        cur.execute(query)
+        res = cur.fetchall()[0][0]
+
+        return res
+
+
 class userModel(BaseModel):
+    '''Class that handles user sign in and sign up requests'''
     
     def create_account(data):
         nationalId = data['nationalId'].strip()
@@ -90,6 +106,10 @@ class userModel(BaseModel):
             return [409, 'National Id already exists']
         elif BaseModel.check_if_exists('users', 'email', email) == True:
             return [409, 'That Email is in use already']
+        elif BaseModel.check_if_exists('users', 'phoneNumber', phoneNumber) == True:
+            return [409, 'That phone number is in use already']
+        elif BaseModel.check_if_exists('users', 'passportUrl', passportUrl) == True:
+            return [409, 'That passport URL is in use already']
 
         new_user = {
             'nationalId' : nationalId,
@@ -106,9 +126,14 @@ class userModel(BaseModel):
         cur.execute(query, new_user)
         userId = cur.fetchone()[0]
         con.commit()
+
+        query = """SELECT isadmin FROM users WHERE email ='{}';""".format(userId)
+        cur.execute(query)
+        isadmin = cur.fetchall()[0][0]
+        
         con.close
 
-        token = create_access_token(identity={'email': userId, 'role' : 'false'} )
+        token = create_access_token(identity={'email': userId, 'role' : isadmin})
 
 
         registered_user = {
@@ -187,7 +212,7 @@ class PartyModel:
         cur = con.cursor()
 
         if BaseModel.check_if_exists('parties', 'partyName', name) == True:
-            return [409, 'Party name already exists']
+            return [409, 'Party already exists']
         
         if BaseModel.check_if_admin(current_user) == False:
             return [401, 'Nice try, But you are not authorized']
@@ -296,10 +321,10 @@ class PartyModel:
         cur = con.cursor()
 
         if BaseModel.check_if_exists('parties', 'partyId', party_id) == False:
-            return [404, "No party with ID:{}".format(party_id)]
+            return [404, "Party cannot be found"]
 
         if BaseModel.check_if_admin(current_user) == False:
-            return [401, 'Nice try, But you are not authorized']
+            return [401, 'You are not authorized']
 
         query = " DELETE FROM parties WHERE partyId = {}".format(party_id)
 
@@ -445,7 +470,7 @@ class OfficeModel:
         cur = con.cursor()
 
         if BaseModel.check_if_exists('offices', 'officeId', office_id) == False:
-            return [404, "No office with ID:{}".format(office_id)]
+            return [404, 'Office not found']
 
         if BaseModel.check_if_admin(current_user) == False:
             return [401, 'Nice try, But you are not authorized']
@@ -462,21 +487,32 @@ class OfficeModel:
     def register_candidate(office_id, data, current_user):
         '''Method for adding a candidate'''
         id = data['user_id']
+        party = data['party_id']
 
         con = database_config.init_test_db()
         cur = con.cursor()
 
         if BaseModel.check_if_exists('offices', 'officeId', office_id) == False:
-            return [404, "No office with ID:{}".format(office_id)]
+            return [404, 'Office does not exist']
+        
+        if BaseModel.check_if_exists('parties', 'partyId', party) == False:
+            return [404, 'Party does not exist']
 
         if BaseModel.check_if_exists('users', 'userId', id) == False:
-            return [404, "No user with that ID: {}".format(id)]
+            return [404, 'User does not exist']
+
+
+        office_name = BaseModel.get_name('officeName','offices', 'officeId', office_id)
+        party_name = BaseModel.get_name('partyName','parties', 'partyId', party)
+        user_first_name = BaseModel.get_name('firstname','users', 'userId', id)
+        user_last_name = BaseModel.get_name('lastname', 'users', 'userId', id)
 
         new_candidate = {
+            'partyId' : party,
             'officeId' : office_id,
             'userId' : id
         }
-        query = """INSERT INTO candidates (officeId, userId) VALUES (%(officeId)s, %(userId)s) RETURNING candidateId"""
+        query = """INSERT INTO candidates (partyId, officeId, userId) VALUES (%(partyId)s,%(officeId)s, %(userId)s) RETURNING candidateId"""
 
         cur.execute(query, new_candidate)
         candidate_id = cur.fetchall()[0]
@@ -486,11 +522,44 @@ class OfficeModel:
 
         res = {
             'CandidateId' : candidate_id,
-            'Office_id' : office_id,
-            'User_id' : id
+            'Office Name' : office_name,
+            'Candidate Name' : user_first_name,
+            'Party Name' : party_name
         }
 
         return [201, res]
+
+    def get_candidates(office_id):
+        con = database_config.init_test_db()
+        cur = con.cursor()
+
+        if BaseModel.check_if_exists('candidates', 'officeId', office_id) == False:
+            return [404, "No candidates exist for the office"]
+
+        query = """SELECT candidateId, partyId, userId FROM candidates WHERE officeId = '{}';""".format(office_id)
+        cur.execute(query)
+        data = cur.fetchall()
+
+        candidates = []
+
+        for i, items in enumerate(data):
+            candidateId, partyId, userId = items
+            partyName = BaseModel.get_name('partyName','parties', 'partyId', partyId)
+            candidate_first_name = BaseModel.get_name('firstname','users', 'userId', userId)
+            candidate_last_name = BaseModel.get_name('lastname','users', 'userId', userId)
+            officeName = BaseModel.get_name('officeName','offices', 'officeId', office_id)
+
+            candidate = {
+                "candidateId" : candidateId,
+                "candidate Name" : candidate_first_name + " " + candidate_last_name,
+                "Party" : partyName,
+                "office Name" : officeName 
+            }
+
+            candidates.append(candidate)
+
+
+        return [200, candidates]
 
     def count_votes(office_id):
         counted_votes = []
@@ -513,7 +582,12 @@ class OfficeModel:
                 if vote[2] == candidate:
                     results += 1
 
-            counted_votes.append({"office" : office_id, "candidate" : candidate, "result" : results})
+            office_name = BaseModel.get_name('officeName', 'offices', 'officeId', office_id)
+            user_id = BaseModel.get_name('userId','candidates', 'candidateId', candidate)
+            user_first_name = BaseModel.get_name('firstname','users', 'userId', user_id)
+            user_last_name = BaseModel.get_name('lastname','users', 'userId', user_id) 
+
+            counted_votes.append({"office" : office_name, "candidate" : user_first_name + " " + user_last_name, "result" : results})
 
         con.commit()
         con.close()
@@ -521,6 +595,7 @@ class OfficeModel:
         return [200, counted_votes]
 
 class voteModel(BaseModel):
+    '''Class that holds all methods handle user voting'''
 
     def create_vote(data):
 
@@ -551,13 +626,23 @@ class voteModel(BaseModel):
         except:
             return [400, 'You have already voted']
 
+        id = BaseModel.get_name('userId','candidates', 'candidateId', candidate_id)
+
+
+        candidate_first_name = BaseModel.get_name('firstname','users', 'userId',id)
+        candidate_last_name = BaseModel.get_name('lastname','users', 'userId', id)
+        office_name = BaseModel.get_name('officeName','offices', 'officeId', office_id[0])
+        user_first_name = BaseModel.get_name('firstname','users', 'userId', user_id)
+        user_last_name = BaseModel.get_name('lastname','users', 'userId', user_id)
+
         con.commit()
         con.close()
 
+        
         vote = {
-            "candidate": candidate_id,
-            "office" : office_id,
-            "created by" : user_id 
+            "candidate": candidate_first_name + " " + candidate_last_name,
+            "office" : office_name,
+            "created by" : user_first_name + " " + user_last_name 
         }
 
         return [201, vote]

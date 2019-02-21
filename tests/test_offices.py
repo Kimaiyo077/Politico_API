@@ -47,12 +47,23 @@ class TestOfficeEndPoint(unittest.TestCase):
         }
 
         self.candidate={
-            "user_id" : 1 
+            "user_id" : 1,
+            "party_id" : 1
         }
 
         self.userlogin = {
             'email' : 'admin@admin.com',
             'password' : 'password'
+        }
+        self.party_data={
+            'name': 'Jubilee Party',
+            'hqAddress' : 'Jubilee House, Nairobi',
+            'logoUrl' : 'https://images.pexels.com'
+        }
+
+        self.vote = {
+	        "candidate" : 1,
+	        "user" : 1
         }
 
     def create_admin(self):
@@ -95,8 +106,6 @@ class TestOfficeEndPoint(unittest.TestCase):
         response = self.client.post(path='/api/v2/offices',data=json.dumps(self.data), content_type='application/json', headers=self.login_user())
         self.assertEqual(response.status_code, 409)
 
-        response = self.client.post(path='/api/v2/offices/1/register', data=json.dumps(self.candidate), content_type='application/json', headers=self.login_user())
-        self.assertEqual(response.status_code, 201)
         
     def test_get_offices(self):
         '''Test to get all offices'''
@@ -122,11 +131,19 @@ class TestOfficeEndPoint(unittest.TestCase):
         response = self.client.delete(path='/api/v2/offices/1', content_type='application/json', headers=self.login_user())
         self.assertEqual(response.status_code, 200)
 
-    def register_a_candidate(self):
+    def test_cast_a_vote(self):
         '''Test for user to register as a candidate'''
+        response = self.client.post(path='/api/v2/parties',data=json.dumps(self.party_data), content_type='application/json', headers=self.login_user())
+        self.assertEqual(response.status_code, 201)
         self.client.post(path='/api/v2/offices',data=json.dumps(self.data), content_type='application/json', headers=self.login_user())
         response = self.client.post(path='/api/v2/offices/1/register', data=json.dumps(self.candidate), content_type='application/json', headers=self.login_user())
         self.assertEqual(response.status_code, 201)
+        response = self.client.get(path='/api/v2/offices/1/candidates', content_type='application/json', headers=self.login_user())
+        self.assertEqual(response.status_code, 200)
+        response = self.client.post(path='/api/v2/votes', data=json.dumps(self.vote), content_type='application/json', headers=self.login_user())
+        self.assertEqual(response.status_code, 201)
+        response = self.client.get(path='/api/v2/offices/1/results', content_type='application/json', headers=self.login_user())
+        self.assertEqual(response.status_code, 200)
 
 if __name__ == '__main__':
     unittest.main()
