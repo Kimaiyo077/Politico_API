@@ -9,6 +9,7 @@ class TestOfficeEndPoint(unittest.TestCase):
         self.app = create_app('testing')
         self.client = self.app.test_client()
 
+        database_config.destroy_db()
         database_config.init_test_db() 
 
         self.data={
@@ -50,11 +51,22 @@ class TestOfficeEndPoint(unittest.TestCase):
         }
 
         self.userlogin = {
-            'email' : 'email@email.com',
+            'email' : 'admin@admin.com',
             'password' : 'password'
         }
 
+    def create_admin(self):
+        query = """INSERT INTO users (nationalid, firstname, lastname, othername, email, phonenumber, passporturl, password, isadmin) VALUES ('3363532211', 'Kimaiyo', 'Isaac', 'Kim', 'admin@admin.com', '0712345679', 'https://ppass.com', 'password', TRUE);"""
+        con = database_config.init_test_db()
+        cur = con.cursor()
+
+        cur.execute(query)
+        con.commit()
+        con.close()
+
+
     def login_user(self):
+        self.create_admin()
         response = self.client.post(path='/api/v2/auth/login', data=json.dumps(self.userlogin), content_type='application/json')
         token = response.json['token']
 
@@ -88,24 +100,31 @@ class TestOfficeEndPoint(unittest.TestCase):
         
     def test_get_offices(self):
         '''Test to get all offices'''
+        self.client.post(path='/api/v2/offices',data=json.dumps(self.data), content_type='application/json', headers=self.login_user())
         response = self.client.get(path='/api/v2/offices', content_type='application/json', headers=self.login_user())
         self.assertEqual(response.status_code, 200)
         
     def test_get_an_office(self):
         '''Test to get a specific office'''
+        self.client.post(path='/api/v2/offices',data=json.dumps(self.data), content_type='application/json', headers=self.login_user())
         response = self.client.get(path='/api/v2/offices/1', content_type='application/json', headers=self.login_user())
         self.assertEqual(response.status_code, 200)
         
     def test_edit_an_office(self):
         '''Test to edit a specific political office'''
-        response = self.client.patch(path='/api/v2/offices/2', data=json.dumps(self.edit_office), content_type='application/json', headers=self.login_user())
+        self.client.post(path='/api/v2/offices',data=json.dumps(self.data), content_type='application/json', headers=self.login_user())
+        response = self.client.patch(path='/api/v2/offices/1', data=json.dumps(self.edit_office), content_type='application/json', headers=self.login_user())
         self.assertEqual(response.status_code, 200)
 
     def test_delete_an_office(self):
         '''Test for deleting a specific office'''
-        response = self.client.delete(path='/api/v2/offices/3', content_type='application/json', headers=self.login_user())
+        self.client.post(path='/api/v2/offices',data=json.dumps(self.data), content_type='application/json', headers=self.login_user())
+        response = self.client.delete(path='/api/v2/offices/1', content_type='application/json', headers=self.login_user())
         self.assertEqual(response.status_code, 200)
 
+    def register_a_candidate(self):
+        '''Test for user to register as a candidate'''
+        self.client.post(path='/api/v2/offices',data=json.dumps(self.data), content_type='application/json', headers=self.login_user())
         response = self.client.post(path='/api/v2/offices/1/register', data=json.dumps(self.candidate), content_type='application/json', headers=self.login_user())
         self.assertEqual(response.status_code, 201)
 
