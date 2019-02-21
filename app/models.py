@@ -3,6 +3,7 @@ import datetime
 import os
 import re
 from flask_jwt_extended import create_access_token
+from flask import make_response, jsonify
 from app import database_config
 from app.validations import validations
 
@@ -20,38 +21,26 @@ class BaseModel:
             return False
 
     def check_if_admin(value):
-        con = database_config.init_test_db()
-        cur = con.cursor()
-        query = """SELECT isadmin FROM users WHERE email = '{}';""".format(value)
 
-        cur.execute(query)
-        isadmin = cur.fetchall()
+        isadmin = value['role']
 
-        if isadmin != True:
-            return False
-        else:    
+        if isadmin:
             return True
-    
+        else:
+            return False
     def check_if_not_null(data):
 
         for i in data:
             if not data[i]:
-                return [404, "{} cannot be empty".format(i)]
+                return [400, "{} cannot be empty".format(i)]
 
         return None
-
-    def create_database_cur(): 
-        con = database_config.init_test_db()
-        cur = con.cursor()
-
-        return con, cur
 
     def create_response(response):
         if response[0] == 201 or response[0] == 200:
             return make_response(jsonify({
                 'status' : response[0],
-                'token' : response[1],
-                'User' : response[2]
+                'data' : response[1],
             }), response[0])
         else:
             return make_response(jsonify({
@@ -119,7 +108,7 @@ class userModel(BaseModel):
         con.commit()
         con.close
 
-        token = create_access_token(identity=userId)
+        token = create_access_token(identity={'email': userId, 'role' : 'false'} )
 
 
         registered_user = {
@@ -142,23 +131,24 @@ class userModel(BaseModel):
 
         con = database_config.init_test_db()
         cur = con.cursor()
-        query = "SELECT userId, email, password FROM users;"
+        query = "SELECT userId, email, password, isadmin FROM users;"
         cur.execute(query)
         data = cur.fetchall()
         res = []
 
         for i, items in enumerate(data):
-            userId, email, password = items
+            userId, email, password, isadmin = items
             details = {
                 'userId' : userId,
                 'email' : email,
-                'password' : password 
+                'password' : password,
+                'isadmin' : isadmin
             }
             res.append(details)
 
         for detail in res:
             if user_email == detail['email'] and user_password == detail['password']:
-                token = create_access_token(detail['email'])
+                token = create_access_token(identity={'email':detail['email'], 'role': detail['isadmin']})
                 data = {
                     'userId' : detail['userId'],
                     'email' : detail['email']
@@ -178,7 +168,7 @@ class PartyModel:
         hqAddress = data['hqAddress'].strip()
         logoUrl = data['logoUrl']
 
-         new_party = {
+        new_party = {
             'partyName' : name,
             'hqAddress' : hqAddress,
             'logoUrl' : logoUrl
@@ -333,7 +323,7 @@ class OfficeModel:
         name = data['name'].strip()
         type = data ['type'].strip()
 
-         new_office = {
+        new_office = {
             'officeName' : name,
             'officeType' : type
         }
@@ -469,7 +459,7 @@ class OfficeModel:
 
         return [200, "Office successfully deleted"]
     
-    def register_candidate(office_id, data):
+    def register_candidate(office_id, data, current_user):
         '''Method for adding a candidate'''
         id = data['user_id']
 

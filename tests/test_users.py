@@ -12,7 +12,7 @@ class TestUserEndpoints(unittest.TestCase):
         self.client = self.app.test_client()
 
         self.user1 = {
-            'nationalId' : '321654987',
+            'nationalId' : '12345678',
             'firstname' : 'Isaack',
             'lastname' : 'Kimaiyo',
             'othername' : 'Kibiwot',
@@ -23,7 +23,7 @@ class TestUserEndpoints(unittest.TestCase):
         }
 
         self.duplicate_user = {
-            'nationalId' : '321654987',
+            'nationalId' : '133467898',
             'firstname' :'Isaac',
             'lastname' : 'Kimaiyo',
             'othername' : 'Kibiwot',
