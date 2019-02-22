@@ -12,25 +12,25 @@ class TestUserEndpoints(unittest.TestCase):
         self.client = self.app.test_client()
 
         self.user1 = {
-            'nationalId' : '12345678',
+            'nationalId' : '33633522',
             'firstname' : 'Isaack',
             'lastname' : 'Kimaiyo',
             'othername' : 'Kibiwot',
             'email' : 'email@email.com',
-            'phoneNumber': '0712345678',
-            'passportUrl' : 'https://passport.com',
+            'phoneNumber': '0712345010',
+            'passportUrl' : 'https://passport1.com',
             'password' : 'password'
         }
 
         self.duplicate_user = {
-            'nationalId' : '133467898',
-            'firstname' :'Isaac',
+            'nationalId' : '33633522',
+            'firstname' : 'Isaack',
             'lastname' : 'Kimaiyo',
             'othername' : 'Kibiwot',
             'email' : 'email@email.com',
-            'phoneNumber': '0712345678',
-            'passportUrl' : 'https://passport.com',
-            'password' : 'password',
+            'phoneNumber': '0712345010',
+            'passportUrl' : 'https://passport1.com',
+            'password' : 'password'
         }
 
         self.userlogin = {

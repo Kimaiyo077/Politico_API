@@ -20,13 +20,13 @@ class TestPartyEndPoint(unittest.TestCase):
         self.data={
             'name': 'Jubilee Party',
             'hqAddress' : 'Jubilee House, Nairobi',
-            'logoUrl' : 'https://images.pexels.com/photos/866351/pexels-photo-866351.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940'
+            'logoUrl' : 'https://images.pexels.com'
         }
 
         self.data_2={
             'name': 'Naswa Party',
             'hqAddress' : 'Naswa House, Nairobi',
-            'logoUrl' : 'https://images.pexels.com/photos/866351/pexels-photo-866351.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940'
+            'logoUrl' : 'https://images.pexels.com'
         }
         self.bad_data={
             'name': 'Naswa Party',

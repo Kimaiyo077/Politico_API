@@ -32,7 +32,15 @@ def get_a_specific_office(office_id):
 
     message = BaseModel.create_response(response)
     return message
-  
+
+@office.route('/offices/<office_id>/candidates', methods=['GET'])
+@jwt_required
+def get_candidates(office_id):
+    response = OfficeModel.get_candidates(int(office_id))
+
+    message = BaseModel.create_response(response)
+    return message
+
 @office.route('/offices/<office_id>', methods=['PATCH'])
 @jwt_required
 def edit_a_specific_office(office_id):
