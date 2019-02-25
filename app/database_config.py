@@ -50,7 +50,7 @@ def tables():
         lastname VARCHAR NOT NULL,
         othername VARCHAR NOT NULL,
         email VARCHAR NOT NULL,
-        phoneNumber VARCHAR NOT NULL,
+        phoneNumber NUMERIC NOT NULL,
         passportUrl TEXT NOT NULL,
         password VARCHAR NOT NULL,
         IsAdmin BOOLEAN DEFAULT False); """

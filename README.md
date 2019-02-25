@@ -16,7 +16,7 @@ Politico_API is an application that enables users to communicate with servers to
 
 [Documentation](https://politico8.docs.apiary.io/#)
 
-[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/c55fe075d8c6b60f275f)
+[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/2f5d240af4b87be28938)
 
 # Required Features
 
@@ -30,6 +30,9 @@ Politico_API is an application that enables users to communicate with servers to
 8. Admin should be able to delete a specific political party.
 9. A user should be able to get all political parties.
 10. A user should be able to get a specific political party.
+11. A user should be able to view all candidates running for office.
+12. A user should be able to cast their vote for a candidate in a particula office.
+13. A user should be able to view the results for a specific office.
 
 # Installation and Setup
 
@@ -107,7 +110,7 @@ Payload
 
 ```
 {
-    'name' : 'Presidents'
+    'name' : 'King'
 }
 ```
 
@@ -115,7 +118,7 @@ Expected response
 
 ```
 {
-    'data' : {'id':'1', 'name':'Presidents', 'type': 'Federal'}
+    'data' : {'id':'1', 'name':'King', 'type': 'Federal'}
 }
 ```
 
@@ -129,7 +132,7 @@ Payload
 {
     'name': 'Jubilee Party',
     'hqAddress' : 'Jubilee House, Nairobi',
-    'logoUrl' : 'https://images.pexels.com/photos/866351/pexels-photo-866351.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940'
+    'logoUrl' : 'https://images.pexels.com'
 }
 ```
 
@@ -159,7 +162,33 @@ Expected response
 
 ```
 {
-    'data' : {'id':'1', 'name': 'Nasa Party', 'hqAddress' : 'Jubilee House, Nairobi', logoUrl' : 'https://images.pexels.com/photos/866351/pexels-photo-866351.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940'},
+    'data' : {'id':'1', 'name': 'Nasa Party', 'hqAddress' : 'Jubilee House, Nairobi', logoUrl' : 'https://images.pexels.com},
     'status' : 200
+}
+```
+
+### Register a candidate
+
+`/api/v2/offices/<office-id>/register`
+
+Payload
+
+```
+{
+    'user_id': 1,
+    'party_id' : 1
+}
+```
+
+### Cast a vote
+
+`/api/v2/votes`
+
+Payload
+
+```
+{
+    'candidate' : 1,
+    'user' : 2
 }
 ```
