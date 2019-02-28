@@ -19,7 +19,7 @@ def response_message(response):
 
 @auth.route('/auth/signup', methods=['POST'])
 def register_user():
-    data = request.get_json()
+    data = request.get_json(force=True)
     resp = userModel.create_account(data)
 
     message = response_message(resp)

@@ -3,6 +3,7 @@
 # Third-party imports
 
 from flask import Flask, jsonify
+from flask_cors import CORS
 import os
 import datetime
 from flask_jwt_extended import JWTManager
@@ -41,6 +42,7 @@ def internalServerError(error):
 def create_app(config_name):
     #creates an instance of Flask called app. 
     app = Flask(__name__)
+    CORS(app)
     app.config.from_object(app_config[config_name])
     app.config.from_pyfile('config.py')
     app.config['JWT_SECRET_KEY'] = os.getenv('SECRET')
