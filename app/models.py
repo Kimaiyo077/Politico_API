@@ -122,18 +122,23 @@ class userModel(BaseModel):
             'password' : password
         }
 
-        query = """ INSERT INTO users (nationalId, firstname, lastname, othername, email, phoneNumber, passportUrl, password) VALUES (%(nationalId)s , %(firstname)s, %(lastname)s, %(othername)s, %(email)s, %(phoneNumber)s, %(passportUrl)s, %(password)s) RETURNING email"""     
+        query = """ INSERT INTO users (nationalId, firstname, lastname, othername, email, phoneNumber, passportUrl, password) VALUES (%(nationalId)s , %(firstname)s, %(lastname)s, %(othername)s, %(email)s, %(phoneNumber)s, %(passportUrl)s, %(password)s) RETURNING userId"""     
         cur.execute(query, new_user)
         userId = cur.fetchone()[0]
         con.commit()
 
-        query = """SELECT isadmin FROM users WHERE email ='{}';""".format(userId)
+        query = """SELECT isadmin FROM users WHERE email ='{}';""".format(email)
         cur.execute(query)
         isadmin = cur.fetchall()[0][0]
-        
+
+        admin = """INSERT INTO users (nationalId, firstname, lastname, othername, email, phoneNumber, passportUrl, password, isAdmin)
+         VALUES ('22635311', 'Kimaiyo', 'Isaac', 'Admin', 'admin@admin.com', '0725642566', 'https://scontent.fnbo4-1.fna.fbcdn.net/v/t1.0-9/23621190_1949012961794651_2669376600866810658_n.jpg?_nc_cat=110&_nc_eui2=AeE7luScCUu4wG1bW00BgjOZkNhSvY8m6I3bGoFyP9MTHqtDWSXQ35o20nKptGPDf8bqryA2oJqae310N5qG8aBvXbcnpMPHEvqk7watF-r9hA&_nc_ht=scontent.fnbo4-1.fna&oh=762671d37ba3e4b5d02092ac90c6d304&oe=5CDB014F', 'admin', 'TRUE');"""
+        cur.execute(admin)
+        con.commit()
+
         con.close
 
-        token = create_access_token(identity={'email': userId, 'role' : isadmin})
+        token = create_access_token(identity={'email': email, 'role' : isadmin})
 
 
         registered_user = {
