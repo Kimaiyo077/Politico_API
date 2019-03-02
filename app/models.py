@@ -161,15 +161,18 @@ class userModel(BaseModel):
 
         con = database_config.init_test_db()
         cur = con.cursor()
-        query = "SELECT userId, email, password, isadmin FROM users;"
+        query = "SELECT userId, nationalId, firstname, lastname, email, password, isadmin FROM users;"
         cur.execute(query)
         data = cur.fetchall()
         res = []
 
         for i, items in enumerate(data):
-            userId, email, password, isadmin = items
+            userId, nationalId, firstname, lastname, email, password, isadmin = items
             details = {
                 'userId' : userId,
+                'nationalId' : int(nationalId),
+                'firstname' : firstname,
+                'lastname' : lastname,
                 'email' : email,
                 'password' : password,
                 'isadmin' : isadmin
@@ -181,6 +184,9 @@ class userModel(BaseModel):
                 token = create_access_token(identity={'email':detail['email'], 'role': detail['isadmin']})
                 data = {
                     'userId' : detail['userId'],
+                    'nationalId' : detail['nationalId'],
+                    'firstname' : detail['firstname'],
+                    'lastname' : detail['lastname'],
                     'email' : detail['email']
                 }
 
