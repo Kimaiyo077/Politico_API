@@ -19,7 +19,7 @@ def init_test_db():
     queries = tables()
 
     for query in queries:
-        cur.execute(query)
+        cur.execute(query)   
     con.commit()
 
     return con
