@@ -156,19 +156,20 @@ class userModel(BaseModel):
 
         con = database_config.init_test_db()
         cur = con.cursor()
-        query = "SELECT userId, nationalId, firstname, lastname, email, password, isadmin FROM users;"
+        query = "SELECT userId, nationalId, firstname, lastname, email, passportUrl, password, isadmin FROM users;"
         cur.execute(query)
         data = cur.fetchall()
         res = []
 
         for i, items in enumerate(data):
-            userId, nationalId, firstname, lastname, email, password, isadmin = items
+            userId, nationalId, firstname, lastname, email, passportUrl, password, isadmin = items
             details = {
                 'userId' : userId,
                 'nationalId' : int(nationalId),
                 'firstname' : firstname,
                 'lastname' : lastname,
                 'email' : email,
+                'passportUrl' : passportUrl,
                 'password' : password,
                 'isadmin' : isadmin
             }
@@ -182,7 +183,8 @@ class userModel(BaseModel):
                     'nationalId' : detail['nationalId'],
                     'firstname' : detail['firstname'],
                     'lastname' : detail['lastname'],
-                    'email' : detail['email']
+                    'email' : detail['email'],
+                    'passportUrl' : detail['passportUrl']
                 }
 
                 return [200, token, data]
