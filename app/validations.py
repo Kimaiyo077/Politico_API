@@ -10,7 +10,7 @@ class validations(object):
         return False
 
     def validate_url(url):
-        test_url = re.match(r"https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+?\.[a-zA-Z]{2,3}$", url)
+        test_url = re.match(r"https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+", url)
 
         if test_url is not None:
             return True

@@ -564,6 +564,9 @@ class OfficeModel:
 
             candidates.append(candidate)
 
+        if len(candidates) <= 0:
+            return [400, "This office has no candidate running for the seat."]
+
 
         return [200, candidates]
 
@@ -652,3 +655,35 @@ class voteModel(BaseModel):
         }
 
         return [201, vote]
+
+    def get_user_votes(user_id):
+
+        votes = []
+
+        con = database_config.init_test_db()
+        cur = con.cursor()
+
+        query = """SELECT * FROM votes WHERE createdBy = '{}';""".format(user_id)
+
+        cur.execute(query)
+        data = cur.fetchall()
+
+        
+        for i, items in enumerate(data):
+            vote_id, officeId, candidate, createdOn, createdBy = items
+
+            office_name = BaseModel.get_name('officeName','offices', 'officeId', officeId)
+            candidate_first_name = BaseModel.get_name('firstname','users', 'userId', candidate)
+            candidate_last_name = BaseModel.get_name('lastname','users', 'userId', candidate)
+
+            vote = {
+                "office" : office_name,
+                "candidate" : candidate_first_name + " " + candidate_last_name,
+                "createdOn" : createdOn,
+            }
+            votes.append(vote)
+
+        if len(votes) <= 0:
+            return [404, "You have not voted yet."]
+
+        return [200, votes]

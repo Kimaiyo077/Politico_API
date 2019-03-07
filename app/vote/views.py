@@ -20,3 +20,12 @@ def cast_vote():
     message = BaseModel.create_response(response)
 
     return message
+
+@vote.route('/votes/<user_id>', methods=["GET"])
+@jwt_required
+def get_specific_vote(user_id):
+    response = voteModel.get_user_votes(user_id)
+
+    message = BaseModel.create_response(response)
+
+    return message
